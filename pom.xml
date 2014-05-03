@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.takari.m2e</groupId>
+  <artifactId>io.takari.m2e.incrementalbuild</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <tycho-version>0.20.0</tycho-version>
+    <tycho-extras-version>${tycho-version}</tycho-extras-version>
+
+    <eclipse-repo.url>http://download.eclipse.org/releases/luna</eclipse-repo.url>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>eclipse</id>
+      <layout>p2</layout>
+      <url>${eclipse-repo.url}</url>
+    </repository>
+  </repositories>
+
+</project>
