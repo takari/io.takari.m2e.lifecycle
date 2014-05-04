@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.m2e.core.mavenComponentContributors">
+      <configurator
+            class="io.takari.m2e.incrementalbuild.core.internal.MavenComponentContributor">
+      </configurator>
+   </extension>
+
+</plugin>
