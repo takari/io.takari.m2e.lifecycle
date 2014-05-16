@@ -131,6 +131,13 @@ public class BasicTest extends AbstractMavenProjectTestCase {
     waitForJobsToComplete();
     assertPaths(recorder.getPaths(), "target/resources/file2.txt");
     assertSynchronized(project, "target/resources/file1.txt");
+
+    // create a file that does not match expected input pattern
+    project.getFile("src/resources/file2.xtx").create(new ByteArrayInputStream(new byte[0]), true,
+        monitor);
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertPaths(recorder.getPaths(), new String[0]);
   }
 
 }
