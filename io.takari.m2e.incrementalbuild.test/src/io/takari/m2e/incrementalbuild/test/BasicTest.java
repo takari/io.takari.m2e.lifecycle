@@ -1,5 +1,6 @@
 package io.takari.m2e.incrementalbuild.test;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,6 +8,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
@@ -69,17 +71,6 @@ public class BasicTest extends AbstractMavenProjectTestCase {
     super.tearDown();
   }
 
-  public void testBasic() throws Exception {
-    IProject project = importProject("projects/basic/pom.xml");
-    waitForJobsToComplete();
-    assertNoErrors(project);
-
-    recorder.clear();
-    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-    waitForJobsToComplete();
-    assertPaths(recorder.getPaths(), "target/resources/file1.txt");
-  }
-
   private void assertPaths(List<String> actual, String... expected) {
     assertEquals(toString(Arrays.asList(expected)), toString(actual));
   }
@@ -91,4 +82,55 @@ public class BasicTest extends AbstractMavenProjectTestCase {
     }
     return sb.toString();
   }
+
+  private void assertSynchronized(IProject project, String path) {
+    IFile file = project.getFile(path);
+    assertTrue(file + " synchronized", file.isSynchronized(IResource.DEPTH_ZERO));
+  }
+
+  //
+  // the tests
+  //
+
+  public void testBasic() throws Exception {
+    IProject project = importProject("projects/basic/pom.xml");
+    waitForJobsToComplete();
+    assertNoErrors(project);
+
+    // full build, assert the output is regenerated even if the input didn't change
+    recorder.clear();
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertPaths(recorder.getPaths(), "target/resources/file1.txt");
+
+    // no-change incremental build, assert no outputs
+    recorder.clear();
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertPaths(recorder.getPaths(), new String[0]);
+
+    // create new file
+    project.getFile("src/resources/file2.txt").create(new ByteArrayInputStream(new byte[0]), true,
+        monitor);
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertPaths(recorder.getPaths(), "target/resources/file2.txt");
+    assertSynchronized(project, "target/resources/file1.txt");
+
+    // change existing file
+    project.getFile("src/resources/file2.txt").setContents(
+        new ByteArrayInputStream(new byte[] {1}), 0, monitor);
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertPaths(recorder.getPaths(), "target/resources/file2.txt");
+    assertSynchronized(project, "target/resources/file1.txt");
+
+    // delete existing file
+    project.getFile("src/resources/file2.txt").delete(true, monitor);
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertPaths(recorder.getPaths(), "target/resources/file2.txt");
+    assertSynchronized(project, "target/resources/file1.txt");
+  }
+
 }

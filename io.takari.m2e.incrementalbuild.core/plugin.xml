@@ -7,5 +7,11 @@
             class="io.takari.m2e.incrementalbuild.core.internal.MavenComponentContributor">
       </configurator>
    </extension>
+   <extension
+         point="org.eclipse.m2e.core.incrementalBuildFrameworks">
+      <framework
+            class="io.takari.m2e.incrementalbuild.core.internal.TakariIncrementalBuildFramework">
+      </framework>
+   </extension>
 
 </plugin>

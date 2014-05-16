@@ -20,7 +20,7 @@ public class MavenComponentContributor
   @Override
   public void contribute(IMavenComponentBinder binder) {
     binder.bind(ClassRealmManagerDelegate.class, getClass(), getClass().getName());
-    binder.bind(Workspace.class, IncrementalBuildWorkspace.class, null);
+    binder.bind(Workspace.class, ThreadLocalBuildWorkspace.class, null);
   }
 
   @Override
