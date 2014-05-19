@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.m2e.tests.common.AbstractMavenProjectTestCase;
 
 @SuppressWarnings("restriction")
-public class BasicTest extends AbstractMavenProjectTestCase {
+public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
 
   private static class WorkspaceChangeRecorder
       implements
