@@ -60,8 +60,8 @@ public class BasicTest extends AbstractMavenProjectTestCase {
   private final WorkspaceChangeRecorder recorder = new WorkspaceChangeRecorder();
 
   @Override
-  public void setName(String name) {
-    super.setName(name);
+  protected void setUp() throws Exception {
+    super.setUp();
     ResourcesPlugin.getWorkspace().addResourceChangeListener(recorder);
   }
 
