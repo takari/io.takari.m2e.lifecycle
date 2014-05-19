@@ -1,0 +1,20 @@
+<lifecycleMappingMetadata>
+  <pluginExecutions>
+    <pluginExecution>
+      <pluginExecutionFilter>
+        <groupId>io.takari.maven.plugins</groupId>
+        <artifactId>takari-lifecycle-plugin</artifactId>
+        <versionRange>[1.5.0-SNAPSHOT,)</versionRange>
+        <goals>
+          <goal>compile</goal>
+          <goal>testCompile</goal>
+        </goals>
+      </pluginExecutionFilter>
+      <action>
+        <configurator>
+          <id>io.takari.m2e.jdt.javaConfigurator</id>
+        </configurator>
+      </action>
+    </pluginExecution>
+  </pluginExecutions>
+</lifecycleMappingMetadata>

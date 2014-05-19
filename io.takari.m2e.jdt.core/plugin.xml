@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.m2e.core.projectConfigurators">
+      <configurator
+            class="io.takari.m2e.jdt.core.internal.JavaConfigurator"
+            id="io.takari.m2e.jdt.javaConfigurator"
+            name="Takari compile goal configurator">
+      </configurator>
+   </extension>
+   <extension
+         point="org.eclipse.m2e.core.lifecycleMappingMetadataSource">
+   </extension>
+
+</plugin>

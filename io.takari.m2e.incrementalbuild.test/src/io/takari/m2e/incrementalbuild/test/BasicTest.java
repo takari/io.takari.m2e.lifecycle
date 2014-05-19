@@ -101,42 +101,52 @@ public class BasicTest extends AbstractMavenProjectTestCase {
     recorder.clear();
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
     waitForJobsToComplete();
+    assertNoErrors(project);
     assertPaths(recorder.getPaths(), "target/resources/file1.txt");
 
     // no-change incremental build, assert no outputs
     recorder.clear();
     project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
     waitForJobsToComplete();
+    assertNoErrors(project);
     assertPaths(recorder.getPaths(), new String[0]);
 
     // create new file
+    recorder.clear();
     project.getFile("src/resources/file2.txt").create(new ByteArrayInputStream(new byte[0]), true,
         monitor);
     project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
     waitForJobsToComplete();
+    assertNoErrors(project);
     assertPaths(recorder.getPaths(), "target/resources/file2.txt");
     assertSynchronized(project, "target/resources/file1.txt");
 
     // change existing file
+    recorder.clear();
     project.getFile("src/resources/file2.txt").setContents(
         new ByteArrayInputStream(new byte[] {1}), 0, monitor);
     project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
     waitForJobsToComplete();
+    assertNoErrors(project);
     assertPaths(recorder.getPaths(), "target/resources/file2.txt");
     assertSynchronized(project, "target/resources/file1.txt");
 
     // delete existing file
+    recorder.clear();
     project.getFile("src/resources/file2.txt").delete(true, monitor);
     project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
     waitForJobsToComplete();
+    assertNoErrors(project);
     assertPaths(recorder.getPaths(), "target/resources/file2.txt");
     assertSynchronized(project, "target/resources/file1.txt");
 
     // create a file that does not match expected input pattern
+    recorder.clear();
     project.getFile("src/resources/file2.xtx").create(new ByteArrayInputStream(new byte[0]), true,
         monitor);
     project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
     waitForJobsToComplete();
+    assertNoErrors(project);
     assertPaths(recorder.getPaths(), new String[0]);
   }
 
