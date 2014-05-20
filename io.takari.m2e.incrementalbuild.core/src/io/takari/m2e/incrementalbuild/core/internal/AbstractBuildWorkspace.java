@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -20,6 +22,10 @@ abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFra
   private final IProject project;
 
   private final IIncrementalBuildFramework.BuildResultCollector results;
+
+  private final Set<File> processedOutputs = new HashSet<>();
+
+  private final Set<File> deletedOutputs = new HashSet<>();
 
   protected AbstractBuildWorkspace(IProject project,
       IIncrementalBuildFramework.BuildResultCollector results) {
@@ -46,6 +52,12 @@ abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFra
 
   @Override
   public boolean isPresent(File file) {
+    if (deletedOutputs.contains(file)) {
+      return false;
+    }
+    if (processedOutputs.contains(file)) {
+      return true;
+    }
     // TODO does this trigger refreshFromLocal?
     return getFile(file).exists();
   }
@@ -56,21 +68,25 @@ abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFra
     if (!file.delete()) {
       throw new IOException("Could not delete " + file);
     }
+    deletedOutputs.add(file);
+    processedOutputs.remove(file);
     results.refresh(file);
   }
 
   @Override
   public void processOutput(File file) {
+    deletedOutputs.remove(file);
+    processedOutputs.add(file);
     results.refresh(file);
   }
 
   @Override
-  public OutputStream newOutputStream(File file) throws IOException {
+  public OutputStream newOutputStream(final File file) throws IOException {
     File parent = file.getParentFile();
     if (!parent.isDirectory() && !parent.mkdirs()) {
       throw new IOException("Could not create directory " + parent);
     }
-    results.refresh(file);
+    processOutput(file);
     return new FileOutputStream(file);
   }
 
