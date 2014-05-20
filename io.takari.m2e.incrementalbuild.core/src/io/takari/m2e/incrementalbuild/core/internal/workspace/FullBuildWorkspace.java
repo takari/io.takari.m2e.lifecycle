@@ -28,6 +28,11 @@ public class FullBuildWorkspace extends AbstractBuildWorkspace implements Worksp
   }
 
   @Override
+  public Workspace escalate() {
+    return this;
+  }
+
+  @Override
   public ResourceStatus getResourceStatus(File resource, long lastModified, long length) {
     IFile file = getFile(resource);
 

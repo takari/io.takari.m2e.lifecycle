@@ -94,6 +94,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
 
   public void testBasic() throws Exception {
     IProject project = importProject("projects/basic/pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(project);
 
@@ -150,4 +151,18 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertPaths(recorder.getPaths(), new String[0]);
   }
 
+  public void testDeltaBuildConfigurationChange() throws Exception {
+    IProject project = importProject("projects/config-change/pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+
+    recorder.clear();
+    copyContent(project, "pom.xml-changed", "pom.xml");
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertPaths(recorder.getPaths(), "target/resources/file1.txt");
+    assertSynchronized(project, "target/resources/file1.txt");
+  }
 }

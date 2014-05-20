@@ -33,6 +33,11 @@ abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFra
     this.results = results;
   }
 
+  @Override
+  public Workspace escalate() {
+    return new FullBuildWorkspace(project, results);
+  }
+
   private IPath getRelativePath(File file) {
     IPath basedir = project.getLocation();
     IPath path = Path.fromOSString(file.getAbsolutePath());

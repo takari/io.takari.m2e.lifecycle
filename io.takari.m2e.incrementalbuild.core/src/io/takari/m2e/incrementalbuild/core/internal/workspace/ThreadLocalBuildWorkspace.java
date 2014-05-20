@@ -17,6 +17,11 @@ public class ThreadLocalBuildWorkspace implements Workspace {
   }
 
   @Override
+  public Workspace escalate() {
+    return delegate.get().escalate();
+  }
+
+  @Override
   public boolean isPresent(File file) {
     return delegate.get().isPresent(file);
   }

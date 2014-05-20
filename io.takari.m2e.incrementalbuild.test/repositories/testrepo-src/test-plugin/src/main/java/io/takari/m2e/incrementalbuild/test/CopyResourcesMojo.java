@@ -28,6 +28,9 @@ public class CopyResourcesMojo extends AbstractMojo {
   @Parameter(defaultValue = "${project.build.directory}/resources")
   private File outputDirectory;
 
+  @Parameter(defaultValue = "UTF-8")
+  private String encoding;
+
   @Component
   private BuildContext context;
 
