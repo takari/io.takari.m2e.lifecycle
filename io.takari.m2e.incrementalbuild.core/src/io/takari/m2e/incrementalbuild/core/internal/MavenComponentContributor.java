@@ -1,6 +1,7 @@
 package io.takari.m2e.incrementalbuild.core.internal;
 
 import io.takari.incrementalbuild.workspace.Workspace;
+import io.takari.m2e.incrementalbuild.core.internal.workspace.ThreadLocalBuildWorkspace;
 
 import java.util.Iterator;
 

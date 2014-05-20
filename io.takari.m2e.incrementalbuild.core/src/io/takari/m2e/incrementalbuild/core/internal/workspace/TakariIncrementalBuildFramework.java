@@ -1,4 +1,4 @@
-package io.takari.m2e.incrementalbuild.core.internal;
+package io.takari.m2e.incrementalbuild.core.internal.workspace;
 
 import static org.eclipse.core.resources.IncrementalProjectBuilder.AUTO_BUILD;
 import static org.eclipse.core.resources.IncrementalProjectBuilder.CLEAN_BUILD;

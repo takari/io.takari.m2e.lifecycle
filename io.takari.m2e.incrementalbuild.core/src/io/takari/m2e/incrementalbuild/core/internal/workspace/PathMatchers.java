@@ -1,4 +1,4 @@
-package io.takari.m2e.incrementalbuild.core.internal;
+package io.takari.m2e.incrementalbuild.core.internal.workspace;
 
 import java.util.ArrayList;
 import java.util.Collection;

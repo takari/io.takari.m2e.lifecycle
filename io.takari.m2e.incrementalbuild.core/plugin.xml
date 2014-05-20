@@ -10,7 +10,7 @@
    <extension
          point="org.eclipse.m2e.core.incrementalBuildFrameworks">
       <framework
-            class="io.takari.m2e.incrementalbuild.core.internal.TakariIncrementalBuildFramework">
+            class="io.takari.m2e.incrementalbuild.core.internal.workspace.TakariIncrementalBuildFramework">
       </framework>
    </extension>
 

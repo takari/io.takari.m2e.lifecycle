@@ -1,4 +1,4 @@
-package io.takari.m2e.incrementalbuild.core.internal;
+package io.takari.m2e.incrementalbuild.core.internal.workspace;
 
 import io.takari.incrementalbuild.workspace.Workspace;
 
