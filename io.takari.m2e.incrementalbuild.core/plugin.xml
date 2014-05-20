@@ -13,5 +13,12 @@
             class="io.takari.m2e.incrementalbuild.core.internal.workspace.TakariIncrementalBuildFramework">
       </framework>
    </extension>
+   <extension
+         point="org.eclipse.m2e.core.projectConfigurators">
+      <configurator
+            class="io.takari.m2e.incrementalbuild.core.internal.MojoExecutionProjectConfigurator"
+            id="io.takari.m2e.incrementalbuild.mojoExecutionConfigurator">
+      </configurator>
+   </extension>
 
 </plugin>
