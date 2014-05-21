@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.tests.common.AbstractMavenProjectTestCase;
 
 @SuppressWarnings("restriction")
@@ -39,11 +40,8 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
 
     @Override
     public boolean visit(IResourceDelta delta) throws CoreException {
-      if (delta.getResource() instanceof IFile
-          && delta.getProjectRelativePath().toString().startsWith("target/resources")) {
-        if ((delta.getKind() & (IResourceDelta.ADDED | IResourceDelta.CHANGED | IResourceDelta.REMOVED)) != 0) {
-          paths.add(delta.getProjectRelativePath().toString());
-        }
+      if (isRelevant(delta)) {
+        paths.add(delta.getProjectRelativePath().toString());
       }
       return true;
     }
@@ -54,6 +52,23 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
 
     public List<String> getPaths() {
       return paths;
+    }
+
+    private boolean isRelevant(IResourceDelta delta) {
+      if (!(delta.getResource() instanceof IFile)) {
+        return false;
+      }
+      if (!delta.getProjectRelativePath().toString().startsWith("target/resources")) {
+        return false;
+      }
+      if ((delta.getKind() & (IResourceDelta.ADDED | IResourceDelta.REMOVED)) != 0) {
+        return true;
+      }
+      if ((delta.getKind() & IResourceDelta.CHANGED) != 0
+          && (delta.getFlags() & IResourceDelta.CONTENT) != 0) {
+        return true;
+      }
+      return false;
     }
   }
 
@@ -164,5 +179,17 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertNoErrors(project);
     assertPaths(recorder.getPaths(), "target/resources/file1.txt");
     assertSynchronized(project, "target/resources/file1.txt");
+  }
+
+  public void testConfigurationUpdate() throws Exception {
+    IProject project = importProject("projects/config-change/pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+
+    copyContent(project, "pom.xml-changed", "pom.xml");
+    recorder.clear();
+    MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration(project, monitor);
+    assertPaths(recorder.getPaths(), new String[0]);
   }
 }

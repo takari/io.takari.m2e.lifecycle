@@ -17,7 +17,7 @@ public class NoChangeBuildWorkspace extends AbstractBuildWorkspace {
 
   @Override
   public Mode getMode() {
-    return Mode.DELTA;
+    return Mode.SUPPRESSED;
   }
 
   @Override
