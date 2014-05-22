@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.takari.m2e.incrementalbuild.test</groupId>
+  <artifactId>cross-module</artifactId>
+  <version>0.1</version>
+  
+  <description>
+  The point of this test is to assert graceful degraded behaviour when mojo needs to track inputs
+  from outside of ${project.basedir}.
+  </description>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.takari.m2e.incrementalbuild.test</groupId>
+        <artifactId>test-plugin</artifactId>
+        <version>0.1</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <directory>${project.basedir}/../resources</directory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

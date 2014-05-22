@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.m2e.core.MavenPlugin;
+import org.eclipse.m2e.core.project.ResolverConfiguration;
 import org.eclipse.m2e.tests.common.AbstractMavenProjectTestCase;
 
 @SuppressWarnings("restriction")
@@ -191,5 +192,22 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     recorder.clear();
     MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration(project, monitor);
     assertPaths(recorder.getPaths(), new String[0]);
+  }
+
+  public void testCrossModule() throws Exception {
+    IProject[] projects =
+        importProjects("projects/cross-module", new String[] {"modulea/pom.xml"},
+            new ResolverConfiguration());
+    IProject project = projects[0];
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+
+    // behaviour is generally undefined, but at very least there should not be a failure
+    recorder.clear();
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertPaths(recorder.getPaths(), "target/resources/file1.txt");
   }
 }

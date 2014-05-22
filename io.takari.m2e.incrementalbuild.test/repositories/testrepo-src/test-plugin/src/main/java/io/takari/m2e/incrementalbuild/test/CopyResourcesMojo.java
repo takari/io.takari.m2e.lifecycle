@@ -35,12 +35,14 @@ public class CopyResourcesMojo extends AbstractMojo {
   private BuildContext context;
 
   public void execute() throws MojoExecutionException, MojoFailureException {
+    final Path sourceBasepath = directory.toPath().normalize();
+    final Path outputBasepath = outputDirectory.toPath().normalize();
     try {
       Collection<String> includes = Collections.singleton("**/*.txt");
       for (Input<File> resource : context.registerAndProcessInputs(directory, includes, null)) {
         File src = resource.getResource();
-        Path relpath = directory.toPath().relativize(src.toPath());
-        File dst = outputDirectory.toPath().resolve(relpath).toFile();
+        Path relpath = sourceBasepath.relativize(src.toPath().normalize());
+        File dst = outputBasepath.resolve(relpath).toFile();
         try (OutputStream os = resource.associateOutput(dst).newOutputStream()) {
           Files.copy(src, os);
         }
