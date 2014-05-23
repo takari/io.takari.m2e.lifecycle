@@ -19,6 +19,8 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator {
 
   private static final String GOAL_TESTCOMPILE = "testCompile";
 
+  private static final String DEFAULT_COMPILER_LEVEL = "1.7";
+
   @Override
   protected List<MojoExecution> getCompilerMojoExecutions(ProjectConfigurationRequest request,
       IProgressMonitor monitor) throws CoreException {
@@ -36,4 +38,19 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator {
     return GOAL_COMPILE.equals(execution.getGoal());
   }
 
+  @Override
+  protected String getDefaultSourceLevel() {
+    return DEFAULT_COMPILER_LEVEL;
+  }
+
+  @Override
+  protected String getDefaultTargetLevel(String source) {
+    if (source != null) {
+      if ("1.2".equals(source) || "1.3".equals(source)) {
+        return "1.4";
+      }
+      return source;
+    }
+    return DEFAULT_COMPILER_LEVEL;
+  }
 }
