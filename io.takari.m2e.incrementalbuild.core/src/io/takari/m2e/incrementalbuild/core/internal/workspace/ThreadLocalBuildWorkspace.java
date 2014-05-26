@@ -5,7 +5,6 @@ import io.takari.incrementalbuild.workspace.Workspace;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collection;
 
 public class ThreadLocalBuildWorkspace implements Workspace {
 
@@ -47,9 +46,8 @@ public class ThreadLocalBuildWorkspace implements Workspace {
   }
 
   @Override
-  public void walk(File basedir, Collection<String> includes, Collection<String> excludes,
-      FileVisitor visitor) throws IOException {
-    delegate.get().walk(basedir, includes, excludes, visitor);
+  public void walk(File basedir, FileVisitor visitor) throws IOException {
+    delegate.get().walk(basedir, visitor);
   }
 
   public static void setDelegate(Workspace delegate) {

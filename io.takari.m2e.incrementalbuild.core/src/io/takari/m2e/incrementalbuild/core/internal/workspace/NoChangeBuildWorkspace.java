@@ -2,7 +2,6 @@ package io.takari.m2e.incrementalbuild.core.internal.workspace;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.m2e.core.internal.builder.IIncrementalBuildFramework;
@@ -26,8 +25,7 @@ public class NoChangeBuildWorkspace extends AbstractBuildWorkspace {
   }
 
   @Override
-  public void walk(File basedir, Collection<String> includes, Collection<String> excludes,
-      FileVisitor visitor) throws IOException {
+  public void walk(File basedir, FileVisitor visitor) throws IOException {
     // nothing to report in delta mode
   }
 

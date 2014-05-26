@@ -4,7 +4,6 @@ import io.takari.incrementalbuild.workspace.Workspace;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -41,16 +40,15 @@ public class DeltaBuildWorkspace extends AbstractBuildWorkspace implements Works
   }
 
   @Override
-  public void walk(File basedir, Collection<String> includes, Collection<String> excludes,
-      final FileVisitor visitor) throws IOException {
+  public void walk(final File basedir, final FileVisitor visitor) throws IOException {
     IResourceDelta delta = this.delta.findMember(getFolder(basedir).getProjectRelativePath());
     if (delta != null) {
-      final PathMatcher matcher = PathMatcher.fromStrings(includes, excludes);
       try {
         delta.accept(new IResourceDeltaVisitor() {
           @Override
           public boolean visit(IResourceDelta delta) throws CoreException {
-            if (delta.getResource() instanceof IFile && matcher.matches(delta.getFullPath())) {
+            // TODO filter irrelevant delta kind and flags, like phantom or team changes
+            if (delta.getResource() instanceof IFile) {
               IFile resource = (IFile) delta.getResource();
               File file = resource.getLocation().toFile();
               long lastModified = resource.getLocalTimeStamp();

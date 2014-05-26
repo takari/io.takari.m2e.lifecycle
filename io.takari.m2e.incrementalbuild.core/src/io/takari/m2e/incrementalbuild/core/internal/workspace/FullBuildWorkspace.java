@@ -4,7 +4,6 @@ import io.takari.incrementalbuild.workspace.Workspace;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -48,15 +47,13 @@ public class FullBuildWorkspace extends AbstractBuildWorkspace implements Worksp
   }
 
   @Override
-  public void walk(File basedir, Collection<String> includes, Collection<String> excludes,
-      final FileVisitor visitor) throws IOException {
+  public void walk(File basedir, final FileVisitor visitor) throws IOException {
     final IFolder folder = getFolder(basedir);
-    final PathMatcher matcher = PathMatcher.fromStrings(includes, excludes);
     try {
       folder.accept(new IResourceVisitor() {
         @Override
         public boolean visit(IResource resource) throws CoreException {
-          if (resource instanceof IFile && matcher.matches(resource.getFullPath())) {
+          if (resource instanceof IFile) {
             File file = resource.getLocation().toFile();
             long lastModified = resource.getLocalTimeStamp();
             long length = file.length();
