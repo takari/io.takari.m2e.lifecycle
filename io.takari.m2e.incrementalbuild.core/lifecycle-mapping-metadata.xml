@@ -6,13 +6,13 @@
         <artifactId>takari-lifecycle-plugin</artifactId>
         <versionRange>[1.6.0-SNAPSHOT,)</versionRange>
         <goals>
-          <goal>compile</goal>
-          <goal>testCompile</goal>
+          <goal>process-resources</goal>
+          <goal>process-test-resources</goal>
         </goals>
       </pluginExecutionFilter>
       <action>
         <configurator>
-          <id>io.takari.m2e.jdt.javaConfigurator</id>
+          <id>io.takari.m2e.incrementalbuild.mojoExecutionConfigurator</id>
         </configurator>
       </action>
     </pluginExecution>
