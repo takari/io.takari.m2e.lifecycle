@@ -8,7 +8,7 @@
     <version>0.1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>io.takari.m2e.jdt.core</artifactId>
-  <packaging>eclipse-plugin</packaging>
+  <artifactId>io.takari.m2e.incrementalbuild.test</artifactId>
+  <packaging>eclipse-test-plugin</packaging>
 
 </project>
