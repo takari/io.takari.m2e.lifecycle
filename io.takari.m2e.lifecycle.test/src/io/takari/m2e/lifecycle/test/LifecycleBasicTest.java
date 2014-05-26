@@ -1,4 +1,4 @@
-package io.takari.m2e.incrementalbuild.test;
+package io.takari.m2e.lifecycle.test;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
