@@ -1,5 +1,6 @@
 package io.takari.m2e.incrementalbuild.core.internal;
 
+import io.takari.incrementalbuild.workspace.MessageSink;
 import io.takari.incrementalbuild.workspace.Workspace;
 import io.takari.m2e.incrementalbuild.core.internal.workspace.ThreadLocalBuildWorkspace;
 
@@ -22,6 +23,7 @@ public class MavenComponentContributor
   public void contribute(IMavenComponentBinder binder) {
     binder.bind(ClassRealmManagerDelegate.class, getClass(), getClass().getName());
     binder.bind(Workspace.class, ThreadLocalBuildWorkspace.class, null);
+    binder.bind(MessageSink.class, ThreadLocalBuildWorkspace.class, null);
   }
 
   @Override

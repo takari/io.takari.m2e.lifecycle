@@ -17,8 +17,10 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.m2e.core.MavenPlugin;
+import org.eclipse.m2e.core.internal.IMavenConstants;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
 import org.eclipse.m2e.tests.common.AbstractMavenProjectTestCase;
+import org.eclipse.m2e.tests.common.WorkspaceHelpers;
 
 @SuppressWarnings("restriction")
 public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
@@ -167,6 +169,39 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertPaths(recorder.getPaths(), new String[0]);
   }
 
+  public void testBasic_includes_excludes_changed() throws Exception {
+    IProject project = importProject("projects/basic/pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertTrue(project.getFile("target/resources/file1.txt").isAccessible());
+
+    // change includes/exclude to ignore all input resources in incremental mode
+    recorder.clear();
+    copyContent(project, "pom.xml-changed", "pom.xml");
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertPaths(recorder.getPaths(), "target/resources/file1.txt");
+    assertFalse(project.getFile("target/resources/file1.txt").isAccessible());
+
+    // reset back to original pom.xml
+    copyContent(project, "pom.xml-orig", "pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertTrue(project.getFile("target/resources/file1.txt").isAccessible());
+
+    // change includes/exclude to ignore all input resources
+    recorder.clear();
+    copyContent(project, "pom.xml-changed", "pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertPaths(recorder.getPaths(), "target/resources/file1.txt");
+    assertFalse(project.getFile("target/resources/file1.txt").isAccessible());
+  }
+
   public void testDeltaBuildConfigurationChange() throws Exception {
     IProject project = importProject("projects/config-change/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -210,4 +245,49 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertNoErrors(project);
     assertPaths(recorder.getPaths(), "target/resources/file1.txt");
   }
+
+  public void testMessages() throws Exception {
+    IProject project = importProject("projects/messages/pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    WorkspaceHelpers.assertErrorMarker(IMavenConstants.MARKER_BUILD_PARTICIPANT_ID, "test123", 0,
+        "src/resources/resource.txt", project);
+
+    // change config to remove resource from relevant resource set
+    copyContent(project, "pom.xml-changed", "pom.xml");
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+
+    // reintroduce resource with a different message
+    copyContent(project, "pom.xml-orig", "pom.xml");
+    copyContent(project, "src/resources/resource.txt-changed", "src/resources/resource.txt");
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    WorkspaceHelpers.assertErrorMarker(IMavenConstants.MARKER_BUILD_PARTICIPANT_ID, "123test", 0,
+        "src/resources/resource.txt", project);
+
+    // remove the message
+    copyContent(project, "src/resources/resource.txt-empty", "src/resources/resource.txt");
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+
+    // reintroduce the message
+    copyContent(project, "src/resources/resource.txt-orig", "src/resources/resource.txt");
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    WorkspaceHelpers.assertErrorMarker(IMavenConstants.MARKER_BUILD_PARTICIPANT_ID, "test123", 0,
+        "src/resources/resource.txt", project);
+  }
+
+  public void testInputsBasedir() throws Exception {
+    IProject project = importProject("projects/inputs-basedir/pom.xml");
+
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertPaths(recorder.getPaths(), "target/resources/resource.txt");
+  }
+
 }

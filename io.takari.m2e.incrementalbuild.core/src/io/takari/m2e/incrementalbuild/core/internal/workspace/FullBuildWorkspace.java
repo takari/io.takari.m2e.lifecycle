@@ -5,8 +5,8 @@ import io.takari.incrementalbuild.workspace.Workspace;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
@@ -48,7 +48,7 @@ public class FullBuildWorkspace extends AbstractBuildWorkspace implements Worksp
 
   @Override
   public void walk(File basedir, final FileVisitor visitor) throws IOException {
-    final IFolder folder = getFolder(basedir);
+    final IContainer folder = getFolder(basedir);
     try {
       folder.accept(new IResourceVisitor() {
         @Override

@@ -1,14 +1,38 @@
 package io.takari.m2e.incrementalbuild.core.internal.workspace;
 
+import io.takari.incrementalbuild.workspace.MessageSink;
 import io.takari.incrementalbuild.workspace.Workspace;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class ThreadLocalBuildWorkspace implements Workspace {
+public class ThreadLocalBuildWorkspace implements Workspace, MessageSink {
 
-  private static final ThreadLocal<Workspace> delegate = new ThreadLocal<>();
+  private static final MessageSink NULL_MESSAGESINK = new MessageSink() {
+    @Override
+    public MessageSink replayMessageSink() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void message(Object resource, int line, int column, String message, Severity severity,
+        Throwable cause) {}
+
+    @Override
+    public int getErrorCount() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clearMessages(Object resource) {
+      throw new UnsupportedOperationException();
+    }
+  };
+
+  private static final ThreadLocal<AbstractBuildWorkspace> delegate = new ThreadLocal<>();
+
+
 
   @Override
   public Mode getMode() {
@@ -50,7 +74,29 @@ public class ThreadLocalBuildWorkspace implements Workspace {
     delegate.get().walk(basedir, visitor);
   }
 
-  public static void setDelegate(Workspace delegate) {
+  public static void setDelegate(AbstractBuildWorkspace delegate) {
     ThreadLocalBuildWorkspace.delegate.set(delegate);
+  }
+
+  @Override
+  public void message(Object resource, int line, int column, String message, Severity severity,
+      Throwable cause) {
+    delegate.get().message(resource, line, column, message, severity, cause);
+  }
+
+  @Override
+  public MessageSink replayMessageSink() {
+    // no need to recreate resource markers in workspace
+    return NULL_MESSAGESINK;
+  }
+
+  @Override
+  public int getErrorCount() {
+    return 0; // never fail the build because of error messages
+  }
+
+  @Override
+  public void clearMessages(Object resource) {
+    delegate.get().clearMessages(resource);
   }
 }

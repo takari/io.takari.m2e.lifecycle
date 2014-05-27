@@ -1,5 +1,7 @@
 package io.takari.m2e.incrementalbuild.core.internal.workspace;
 
+import io.takari.incrementalbuild.workspace.MessageSink;
+import io.takari.incrementalbuild.workspace.MessageSink.Severity;
 import io.takari.incrementalbuild.workspace.Workspace;
 
 import java.io.File;
@@ -9,15 +11,20 @@ import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.m2e.core.internal.builder.IIncrementalBuildFramework;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("restriction")
 abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFramework.BuildContext {
+
+  private final Logger log = LoggerFactory.getLogger(getClass());
 
   private final IProject project;
 
@@ -51,8 +58,9 @@ abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFra
     return project.getFile(getRelativePath(file));
   }
 
-  protected IFolder getFolder(File file) {
-    return project.getFolder(getRelativePath(file));
+  protected IContainer getFolder(File file) {
+    IPath relativePath = getRelativePath(file);
+    return relativePath.isEmpty() ? project : project.getFolder(relativePath);
   }
 
   @Override
@@ -98,5 +106,46 @@ abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFra
   @Override
   public void release() {
     ThreadLocalBuildWorkspace.setDelegate(null);
+  }
+
+  public void message(Object resource, int line, int column, String message,
+      MessageSink.Severity severity, Throwable cause) {
+    if (!isProjectFile(resource)) {
+      if (severity == Severity.ERROR) {
+        log.error("{}:[{}:{}] {}", resource.toString(), line, column, message, cause);
+      } else {
+        log.warn("{}:[{}:{}] {}", resource.toString(), line, column, message, cause);
+      }
+    }
+
+    results.addMessage((File) resource, line, column, message, toSeverityLevel(severity), cause);
+  }
+
+  public void clearMessages(Object resource) {
+    if (isProjectFile(resource)) {
+      results.removeMessages((File) resource);
+    }
+  }
+
+  private boolean isProjectFile(Object resource) {
+    try {
+      return resource instanceof File && getFile((File) resource) != null;
+    } catch (IllegalArgumentException e) {
+      return false; // resource is outside of project basedir
+    }
+  }
+
+
+  private int toSeverityLevel(MessageSink.Severity severity) {
+    switch (severity) {
+      case ERROR:
+        return IMarker.SEVERITY_ERROR;
+      case WARNING:
+        return IMarker.SEVERITY_WARNING;
+      case INFO:
+        return IMarker.SEVERITY_WARNING;
+      default:
+        throw new IllegalArgumentException();
+    }
   }
 }

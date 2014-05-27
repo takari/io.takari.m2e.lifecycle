@@ -7,8 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -31,6 +31,12 @@ public class CopyResourcesMojo extends AbstractMojo {
   @Parameter(defaultValue = "UTF-8")
   private String encoding;
 
+  @Parameter
+  private List<String> includes = Arrays.asList("**/*.txt");
+
+  @Parameter
+  private List<String> excludes;
+
   @Component
   private BuildContext context;
 
@@ -38,8 +44,7 @@ public class CopyResourcesMojo extends AbstractMojo {
     final Path sourceBasepath = directory.toPath().normalize();
     final Path outputBasepath = outputDirectory.toPath().normalize();
     try {
-      Collection<String> includes = Collections.singleton("**/*.txt");
-      for (Input<File> resource : context.registerAndProcessInputs(directory, includes, null)) {
+      for (Input<File> resource : context.registerAndProcessInputs(directory, includes, excludes)) {
         File src = resource.getResource();
         Path relpath = sourceBasepath.relativize(src.toPath().normalize());
         File dst = outputBasepath.resolve(relpath).toFile();

@@ -4,6 +4,7 @@
       <pluginExecutionFilter>
         <goals>
           <goal>copy-resources</goal>
+          <goal>message</goal>
         </goals>
       </pluginExecutionFilter>
       <action>
