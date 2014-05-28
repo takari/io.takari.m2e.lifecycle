@@ -8,10 +8,9 @@
         </goals>
       </pluginExecutionFilter>
       <action>
-        <execute>
-          <runOnIncremental>true</runOnIncremental>
-          <runOnConfiguration>true</runOnConfiguration>
-        </execute>
+        <configurator>
+          <id>io.takari.m2e.incrementalbuild.mojoExecutionConfigurator</id>
+        </configurator>
       </action>
     </pluginExecution>
   </pluginExecutions>
