@@ -2,36 +2,24 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>io.tesla.tycho</groupId>
+    <artifactId>tycho-support</artifactId>
+    <version>0.0.12</version>
+  </parent>
+
   <groupId>io.takari.m2e</groupId>
   <artifactId>io.takari.m2e.lifecycle</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-    <tycho.version>0.20.0</tycho.version>
-    <tycho-extras.version>${tycho-version}</tycho-extras.version>
-
-    <eclipse-repo.url>http://download.eclipse.org/releases/luna</eclipse-repo.url>
     <m2e-repo.url>http://repository.takari.io:8081/nexus/content/sites/m2e.extras/m2e/1.6.0/N/LATEST/</m2e-repo.url>
 
     <incrementalbuild-workspace.version>0.5.0-SNAPSHOT</incrementalbuild-workspace.version>
-
-    <!-- p2 repository configuration -->
-    <repositoryPathId>io.takari.m2e.lifecycle</repositoryPathId>
-    <serverIdInSettingsXml>m2e.extras</serverIdInSettingsXml>
-    <repositoryUrl>http://repository.tesla.io:8081/nexus/service/local/repositories/m2e.extras/content-compressed/</repositoryUrl>
-    <repositoryPath>${repositoryPathId}/${unqualifiedVersion}/N/${unqualifiedVersion}.${buildQualifier}</repositoryPath>
-
   </properties>
 
   <repositories>
-    <repository>
-      <id>eclipse</id>
-      <layout>p2</layout>
-      <url>${eclipse-repo.url}</url>
-    </repository>
     <repository>
       <id>m2e</id>
       <layout>p2</layout>
@@ -46,7 +34,6 @@
     <module>io.takari.m2e.lifecycle.feature</module>
   </modules>
 
-
   <dependencies>
     <dependency>
       <groupId>io.takari</groupId>
@@ -54,22 +41,17 @@
       <version>${incrementalbuild-workspace.version}</version>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-maven-plugin</artifactId>
-        <version>${tycho.version}</version>
-        <extensions>true</extensions>
-      </plugin>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
         <artifactId>target-platform-configuration</artifactId>
-        <version>${tycho.version}</version>
         <configuration>
           <pomDependencies>consider</pomDependencies>
         </configuration>
       </plugin>
+
     </plugins>
   </build>
 </project>

@@ -11,4 +11,24 @@
   <artifactId>io.takari.m2e.lifecycle.test</artifactId>
   <packaging>eclipse-test-plugin</packaging>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-surefire-plugin</artifactId>
+          <version>${tychoVersion}</version>
+          <configuration>
+            <dependencies>
+              <dependency>
+                <artifactId>org.eclipse.jdt.launching.macosx</artifactId>
+                <version>0.0.0</version>
+                <type>eclipse-plugin</type>
+              </dependency>
+            </dependencies>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>
