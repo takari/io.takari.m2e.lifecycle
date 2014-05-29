@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.tesla.tycho</groupId>
     <artifactId>tycho-support</artifactId>
-    <version>0.0.12</version>
+    <version>0.0.13</version>
   </parent>
 
   <groupId>io.takari.m2e</groupId>
@@ -14,6 +14,9 @@
   <packaging>pom</packaging>
 
   <properties>
+    <repositoryPathId>m2eclipse-incrementalbuils</repositoryPathId>
+    <p2MetadataName>Takari Build Lifecycle support</p2MetadataName>
+
     <m2e-repo.url>http://repository.takari.io:8081/nexus/content/sites/m2e.extras/m2e/1.6.0/N/LATEST/</m2e-repo.url>
 
     <incrementalbuild-workspace.version>0.5.0-SNAPSHOT</incrementalbuild-workspace.version>
@@ -51,7 +54,6 @@
           <pomDependencies>consider</pomDependencies>
         </configuration>
       </plugin>
-
     </plugins>
   </build>
 </project>
