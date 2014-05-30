@@ -14,7 +14,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <repositoryPathId>m2eclipse-incrementalbuils</repositoryPathId>
+    <repositoryPathId>m2eclipse-takari-lifecycle</repositoryPathId>
     <p2MetadataName>Takari Build Lifecycle support</p2MetadataName>
 
     <m2e-repo.url>http://repository.takari.io:8081/nexus/content/sites/m2e.extras/m2e/1.6.0/N/LATEST/</m2e-repo.url>
