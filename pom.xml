@@ -14,6 +14,9 @@
   <packaging>pom</packaging>
 
   <properties>
+    <!-- need fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=436159  -->
+    <tychoVersion>0.21.0-SNAPSHOT</tychoVersion>
+
     <repositoryPathId>m2eclipse-takari-lifecycle</repositoryPathId>
     <p2MetadataName>Takari Build Lifecycle support</p2MetadataName>
 
@@ -29,6 +32,16 @@
       <url>${m2e-repo.url}</url>
     </repository>
   </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>tycho-snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
   <modules>
     <module>io.takari.m2e.incrementalbuild.core</module>
