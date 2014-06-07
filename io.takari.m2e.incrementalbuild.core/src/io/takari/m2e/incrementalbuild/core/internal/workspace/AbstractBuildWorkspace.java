@@ -78,7 +78,7 @@ abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFra
 
   @Override
   public void deleteFile(File file) throws IOException {
-    if (!file.delete()) {
+    if (file.exists() && !file.delete()) {
       throw new IOException("Could not delete " + file);
     }
     deletedOutputs.add(file);

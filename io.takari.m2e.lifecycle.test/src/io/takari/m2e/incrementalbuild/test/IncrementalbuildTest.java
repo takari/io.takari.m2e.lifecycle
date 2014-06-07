@@ -202,6 +202,24 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertFalse(project.getFile("target/resources/file1.txt").isAccessible());
   }
 
+  public void testBasic_cleanGeneratedResources() throws Exception {
+    IProject project = importProject("projects/basic/pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertTrue(project.getFile("target/resources/file1.txt").isAccessible());
+
+    // resource is deleted from sources folder and from its output location
+    // can happen when source change is picked by scm update followed by clean build
+    project.getFile("src/resources/file1.txt").delete(true, monitor);
+    project.getFile("target/resources/file1.txt").delete(true, monitor);
+
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertFalse(project.getFile("target/resources/file1.txt").isAccessible());
+  }
+
   public void testDeltaBuildConfigurationChange() throws Exception {
     IProject project = importProject("projects/config-change/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -289,5 +307,4 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertNoErrors(project);
     assertPaths(recorder.getPaths(), "target/resources/resource.txt");
   }
-
 }
