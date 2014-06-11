@@ -22,7 +22,7 @@
 
     <m2e-repo.url>http://repository.takari.io:8081/nexus/content/sites/m2e.extras/m2e/1.6.0/N/LATEST/</m2e-repo.url>
 
-    <incrementalbuild-workspace.version>0.5.0</incrementalbuild-workspace.version>
+    <incrementalbuild-workspace.version>0.6.0</incrementalbuild-workspace.version>
   </properties>
 
   <repositories>
