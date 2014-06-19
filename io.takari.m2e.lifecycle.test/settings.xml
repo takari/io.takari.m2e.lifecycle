@@ -10,6 +10,7 @@
           <url>file:repositories/testrepo</url>
           <snapshots><enabled>true</enabled></snapshots>
           <releases><enabled>true</enabled></releases>
+          <updatePolicy>always</updatePolicy>
         </repository>
       </repositories>
       <pluginRepositories>
@@ -18,6 +19,7 @@
           <url>file:repositories/testrepo</url>
           <snapshots><enabled>true</enabled></snapshots>
           <releases><enabled>true</enabled></releases>
+          <updatePolicy>always</updatePolicy>
         </pluginRepository>
       </pluginRepositories>
     </profile>
