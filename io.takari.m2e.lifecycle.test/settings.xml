@@ -21,10 +21,31 @@
         </pluginRepository>
       </pluginRepositories>
     </profile>
+    <profile>
+      <!-- this is needed to be able to resolve staged and just-released artifacts -->
+      <id>takari-staging</id>
+      <repositories>
+        <repository>
+          <id>takari-staging</id>
+          <url>http://repository.takari.io:8081/nexus/content/groups/staging/</url>
+          <snapshots><enabled>false</enabled></snapshots>
+          <releases><enabled>true</enabled></releases>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>takari-staging</id>
+          <url>http://repository.takari.io:8081/nexus/content/groups/staging/</url>
+          <snapshots><enabled>false</enabled></snapshots>
+          <releases><enabled>true</enabled></releases>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
   </profiles>
 
   <activeProfiles>
     <activeProfile>testrepo</activeProfile>
+    <activeProfile>takari-staging</activeProfile>
   </activeProfiles>
 
 </settings>

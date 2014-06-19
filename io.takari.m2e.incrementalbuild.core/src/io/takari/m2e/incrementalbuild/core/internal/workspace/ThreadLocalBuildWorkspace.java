@@ -9,30 +9,7 @@ import java.io.OutputStream;
 
 public class ThreadLocalBuildWorkspace implements Workspace, MessageSink {
 
-  private static final MessageSink NULL_MESSAGESINK = new MessageSink() {
-    @Override
-    public MessageSink replayMessageSink() {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void message(Object resource, int line, int column, String message, Severity severity,
-        Throwable cause) {}
-
-    @Override
-    public int getErrorCount() {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void clearMessages(Object resource) {
-      throw new UnsupportedOperationException();
-    }
-  };
-
   private static final ThreadLocal<AbstractBuildWorkspace> delegate = new ThreadLocal<>();
-
-
 
   @Override
   public Mode getMode() {
@@ -82,17 +59,6 @@ public class ThreadLocalBuildWorkspace implements Workspace, MessageSink {
   public void message(Object resource, int line, int column, String message, Severity severity,
       Throwable cause) {
     delegate.get().message(resource, line, column, message, severity, cause);
-  }
-
-  @Override
-  public MessageSink replayMessageSink() {
-    // no need to recreate resource markers in workspace
-    return NULL_MESSAGESINK;
-  }
-
-  @Override
-  public int getErrorCount() {
-    return 0; // never fail the build because of error messages
   }
 
   @Override
