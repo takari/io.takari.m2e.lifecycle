@@ -3,7 +3,9 @@ package io.takari.m2e.incrementalbuild.core.internal.workspace;
 import io.takari.incrementalbuild.workspace.Workspace;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -19,6 +21,10 @@ public class FullBuildWorkspace extends AbstractBuildWorkspace implements Worksp
   public FullBuildWorkspace(IProject project,
       IIncrementalBuildFramework.BuildResultCollector results) {
     super(project, results);
+  }
+
+  public FullBuildWorkspace(AbstractBuildWorkspace parent) {
+    super(parent);
   }
 
   @Override
@@ -66,5 +72,15 @@ public class FullBuildWorkspace extends AbstractBuildWorkspace implements Worksp
       // TODO likely not good enough
       throw new IOException(e);
     }
+  }
+
+  @Override
+  public OutputStream newOutputStream(File file) throws IOException {
+    File parent = file.getParentFile();
+    if (!parent.isDirectory() && !parent.mkdirs()) {
+      throw new IOException("Could not create directory " + parent);
+    }
+    processOutput(file);
+    return new FileOutputStream(file);
   }
 }

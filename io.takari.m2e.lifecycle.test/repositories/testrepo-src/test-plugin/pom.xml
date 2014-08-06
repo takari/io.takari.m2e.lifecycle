@@ -15,7 +15,7 @@
   <properties>
     <maven-core.version>3.2.1</maven-core.version>
     <maven-plugin-tools.version>3.2</maven-plugin-tools.version>
-    <incrementalbuild.version>0.7.0</incrementalbuild.version>
+    <incrementalbuild.version>0.8.2</incrementalbuild.version>
   </properties>
 
   <dependencies>

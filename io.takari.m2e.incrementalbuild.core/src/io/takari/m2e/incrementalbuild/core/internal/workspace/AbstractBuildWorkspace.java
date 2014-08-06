@@ -5,7 +5,6 @@ import io.takari.incrementalbuild.workspace.MessageSink.Severity;
 import io.takari.incrementalbuild.workspace.Workspace;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashSet;
@@ -30,19 +29,28 @@ abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFra
 
   private final IIncrementalBuildFramework.BuildResultCollector results;
 
-  private final Set<File> processedOutputs = new HashSet<>();
+  private final Set<File> processedOutputs;
 
-  private final Set<File> deletedOutputs = new HashSet<>();
+  private final Set<File> deletedOutputs;
 
   protected AbstractBuildWorkspace(IProject project,
       IIncrementalBuildFramework.BuildResultCollector results) {
     this.project = project;
     this.results = results;
+    this.processedOutputs = new HashSet<>();
+    this.deletedOutputs = new HashSet<>();
+  }
+
+  protected AbstractBuildWorkspace(AbstractBuildWorkspace parent) {
+    this.project = parent.project;
+    this.results = parent.results;
+    this.processedOutputs = parent.processedOutputs;
+    this.deletedOutputs = parent.deletedOutputs;
   }
 
   @Override
   public Workspace escalate() {
-    return new FullBuildWorkspace(project, results);
+    return new FullBuildWorkspace(this);
   }
 
   private IPath getRelativePath(File file) {
@@ -83,28 +91,31 @@ abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFra
     }
     deletedOutputs.add(file);
     processedOutputs.remove(file);
-    results.refresh(file);
   }
 
   @Override
   public void processOutput(File file) {
     deletedOutputs.remove(file);
     processedOutputs.add(file);
-    results.refresh(file);
+  }
+
+  public void clearProcessedOutput(File file) {
+    processedOutputs.remove(file);
   }
 
   @Override
   public OutputStream newOutputStream(final File file) throws IOException {
-    File parent = file.getParentFile();
-    if (!parent.isDirectory() && !parent.mkdirs()) {
-      throw new IOException("Could not create directory " + parent);
-    }
-    processOutput(file);
-    return new FileOutputStream(file);
+    return new IncrementalFileOutputStream(this, file);
   }
 
   @Override
   public void release() {
+    for (File file : processedOutputs) {
+      results.refresh(file);
+    }
+    for (File file : deletedOutputs) {
+      results.refresh(file);
+    }
     ThreadLocalBuildWorkspace.setDelegate(null);
   }
 

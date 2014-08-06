@@ -125,6 +125,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
 
     // no-change incremental build, assert no outputs
     recorder.clear();
+    project.getFile("pom.xml").touch(monitor);
     project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(project);
@@ -312,4 +313,22 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertNoErrors(project);
     assertPaths(recorder.getPaths(), "target/resources/resource.txt");
   }
+
+  public void testUnmodifiedOutputStream() throws Exception {
+    IProject project = importProject("projects/unmodified-output-stream/pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertPaths(recorder.getPaths(), "target/resources/file1.txt");
+
+    // no-change incremental build, assert no outputs
+    recorder.clear();
+    project.getFile("pom.xml").touch(monitor);
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertTrue(project.getFile("target/resources/file1.txt").isSynchronized(IResource.DEPTH_ZERO));
+    assertPaths(recorder.getPaths(), new String[0]);
+  }
+
 }
