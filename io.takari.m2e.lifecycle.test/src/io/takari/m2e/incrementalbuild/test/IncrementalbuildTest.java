@@ -30,6 +30,8 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
         IResourceChangeListener,
         IResourceDeltaVisitor {
 
+    private String pathPrefix = "target/resources";
+
     private List<String> paths = new ArrayList<>();
 
     @Override
@@ -57,11 +59,15 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
       return paths;
     }
 
+    public void setPathPrefix(String pathPrefix) {
+      this.pathPrefix = pathPrefix;
+    }
+
     private boolean isRelevant(IResourceDelta delta) {
       if (!(delta.getResource() instanceof IFile)) {
         return false;
       }
-      if (!delta.getProjectRelativePath().toString().startsWith("target/resources")) {
+      if (!delta.getProjectRelativePath().toString().startsWith(pathPrefix)) {
         return false;
       }
       if ((delta.getKind() & (IResourceDelta.ADDED | IResourceDelta.REMOVED)) != 0) {
@@ -167,6 +173,24 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(project);
+    assertPaths(recorder.getPaths(), new String[0]);
+  }
+
+  public void testBasic_synchronized() throws Exception {
+    IProject project = importProject("projects/basic/pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+
+    project.getFile("src/resources/file2.txt").create(new ByteArrayInputStream(new byte[0]), true,
+        monitor);
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+
+    recorder.clear();
+    recorder.setPathPrefix("target/incremental");
+    project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+    waitForJobsToComplete();
     assertPaths(recorder.getPaths(), new String[0]);
   }
 
