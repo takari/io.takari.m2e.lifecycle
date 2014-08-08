@@ -15,7 +15,7 @@
 
   <properties>
     <!-- need fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=436159  -->
-    <tychoVersion>0.21.0-SNAPSHOT</tychoVersion>
+    <tychoVersion>0.21.0</tychoVersion>
 
     <repositoryPathId>m2eclipse-takari-lifecycle</repositoryPathId>
     <p2MetadataName>Takari Build Lifecycle support</p2MetadataName>
