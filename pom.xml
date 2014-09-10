@@ -31,6 +31,11 @@
       <layout>p2</layout>
       <url>${m2e-repo.url}</url>
     </repository>
+    <repository>
+      <id>takari-stats</id>
+      <layout>p2</layout>
+      <url>http://repository.takari.io:8081/nexus/content/sites/m2e.extras/takari-stats-m2e/0.1.0/N/LATEST/</url>
+    </repository>
   </repositories>
 
   <pluginRepositories>
