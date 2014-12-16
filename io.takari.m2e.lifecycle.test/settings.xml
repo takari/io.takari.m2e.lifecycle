@@ -38,7 +38,7 @@
       <repositories>
         <repository>
           <id>takari-staging</id>
-          <url>http://repository.takari.io:8081/nexus/content/groups/staging/</url>
+          <url>https://repository.takari.io/content/groups/staging/</url>
           <snapshots><enabled>false</enabled></snapshots>
           <releases><enabled>true</enabled></releases>
         </repository>
@@ -46,7 +46,7 @@
       <pluginRepositories>
         <pluginRepository>
           <id>takari-staging</id>
-          <url>http://repository.takari.io:8081/nexus/content/groups/staging/</url>
+          <url>https://repository.takari.io/content/groups/staging/</url>
           <snapshots><enabled>false</enabled></snapshots>
           <releases><enabled>true</enabled></releases>
         </pluginRepository>
