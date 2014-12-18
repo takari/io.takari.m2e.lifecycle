@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    Copyright (c) 2014 Takari, Inc.
-    All rights reserved. This program and the accompanying materials
-    are made available under the terms of the Eclipse Public License v1.0
-    which accompanies this distribution, and is available at
-    http://www.eclipse.org/legal/epl-v10.html
-
--->
 <metadata>
   <groupId>io.takari.m2e.incrementalbuild.test</groupId>
   <artifactId>test-plugin</artifactId>
@@ -17,6 +8,6 @@
     <versions>
       <version>0.1</version>
     </versions>
-    <lastUpdated>20140807161616</lastUpdated>
+    <lastUpdated>20141218140344</lastUpdated>
   </versioning>
 </metadata>
