@@ -13,7 +13,10 @@
       <pluginExecutionFilter>
         <groupId>io.takari.maven.plugins</groupId>
         <artifactId>takari-lifecycle-plugin</artifactId>
-        <versionRange>[1.7.0,)</versionRange>
+        <!--
+          | As of version 1.9, m2e lifeycle mapping metadata is embedded in takari-lifecycle-plugin 
+         -->
+        <versionRange>[1.7.0,1.9.0)</versionRange>
         <goals>
           <goal>process-resources</goal>
           <goal>process-test-resources</goal>

@@ -52,11 +52,32 @@
         </pluginRepository>
       </pluginRepositories>
     </profile>
+    <profile>
+      <!-- this is needed to be able to resolve snapshot artifacts -->
+      <id>takari-snapshots</id>
+      <repositories>
+        <repository>
+          <id>takari-snapshots</id>
+          <url>https://repository.takari.io/content/repositories/snapshots</url>
+          <snapshots><enabled>true</enabled></snapshots>
+          <releases><enabled>false</enabled></releases>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>takari-snapshots</id>
+          <url>https://repository.takari.io/content/repositories/snapshots</url>
+          <snapshots><enabled>true</enabled></snapshots>
+          <releases><enabled>false</enabled></releases>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
   </profiles>
 
   <activeProfiles>
     <activeProfile>testrepo</activeProfile>
     <activeProfile>takari-staging</activeProfile>
+    <activeProfile>takari-snapshots</activeProfile>
   </activeProfiles>
 
 </settings>
