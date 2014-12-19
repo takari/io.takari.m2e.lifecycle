@@ -38,7 +38,7 @@ public class ClasspathAccessRulesTest extends AbstractMavenProjectTestCase {
 
     IAccessRule[] rules = cp[1].getAccessRules();
     assertEquals(1, rules.length);
-    assertEquals(new Path("**/*"), rules[0].getPattern());
+    assertEquals(new Path("**"), rules[0].getPattern());
 
     File exportsFile =
         project.getFile("target/classes/META-INF/takari/export-package").getLocation().toFile();

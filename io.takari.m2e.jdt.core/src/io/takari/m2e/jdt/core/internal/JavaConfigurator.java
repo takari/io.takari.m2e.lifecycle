@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,6 +47,7 @@ import org.osgi.framework.Constants;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.CharStreams;
+import com.google.common.io.LineProcessor;
 
 @SuppressWarnings("restriction")
 public class JavaConfigurator extends AbstractJavaProjectConfigurator
@@ -154,15 +156,15 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
         Collection<String> exportedPackages = getExportedPackages(dependencies.get(artifactKey));
         if (exportedPackages != null) {
           for (String exportedPackage : exportedPackages) {
-            IPath pattern = new Path(exportedPackage.replace('.', '/')).append("/");
+            IPath pattern = new Path(exportedPackage).append("/*");
             entry.addAccessRule(JavaCore.newAccessRule(pattern, IAccessRule.K_ACCESSIBLE));
           }
-          entry.addAccessRule(JavaCore.newAccessRule(new Path("**/*"), IAccessRule.K_NON_ACCESSIBLE
+          entry.addAccessRule(JavaCore.newAccessRule(new Path("**"), IAccessRule.K_NON_ACCESSIBLE
               | IAccessRule.IGNORE_IF_BETTER));
         }
       } else {
         // indirect dependency, forbid everything
-        entry.addAccessRule(JavaCore.newAccessRule(new Path("**/*"), IAccessRule.K_NON_ACCESSIBLE
+        entry.addAccessRule(JavaCore.newAccessRule(new Path("**"), IAccessRule.K_NON_ACCESSIBLE
             | IAccessRule.IGNORE_IF_BETTER));
       }
     }
@@ -217,7 +219,21 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
   }
 
   protected static Collection<String> parseExportPackage(InputStream is) throws IOException {
-    return CharStreams.readLines(new InputStreamReader(is, Charsets.UTF_8));
+    LineProcessor<List<String>> processor = new LineProcessor<List<String>>() {
+      final List<String> result = new ArrayList<String>();
+
+      @Override
+      public boolean processLine(String line) throws IOException {
+        result.add(line.replace('.', '/'));
+        return true; // keep reading
+      }
+
+      @Override
+      public List<String> getResult() {
+        return result;
+      }
+    };
+    return CharStreams.readLines(new InputStreamReader(is, Charsets.UTF_8), processor);
   }
 
   protected static Collection<String> parseBundleManifest(InputStream is) throws IOException,
@@ -233,7 +249,7 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
     Set<String> packages = new HashSet<>();
     for (ManifestElement element : ManifestElement.parseHeader(Constants.EXPORT_PACKAGE,
         exportPackageHeader)) {
-      packages.add(element.getValue());
+      packages.add(element.getValue().replace('.', '/'));
     }
     return packages;
   }
