@@ -166,4 +166,13 @@ abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFra
         throw new IllegalArgumentException();
     }
   }
+
+  @Override
+  public final void walk(final File basedir, final FileVisitor visitor) throws IOException {
+    if (basedir.isDirectory()) {
+      doWalk(basedir, visitor);
+    }
+  }
+
+  protected abstract void doWalk(final File basedir, final FileVisitor visitor) throws IOException;
 }

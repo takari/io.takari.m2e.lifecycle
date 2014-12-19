@@ -362,4 +362,10 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertPaths(recorder.getPaths(), new String[0]);
   }
 
+  public void testBasedirDoesnotexist() throws Exception {
+    IProject project = importProject("projects/basedir-doesnotexist/pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+  }
 }
