@@ -105,19 +105,20 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
   protected void addJavaProjectOptions(Map<String, String> options,
       ProjectConfigurationRequest request, IProgressMonitor monitor) throws CoreException {
     super.addJavaProjectOptions(options, request, monitor);
-    if (enforceClasspathAccessRules(request.getMavenProjectFacade(), monitor)) {
+    IMavenProjectFacade facade = request.getMavenProjectFacade();
+    if (getEnforce(facade, "transitiveDependencyReference", monitor)
+        || getEnforce(facade, "privatePackageReference", monitor)) {
       options.put(JavaCore.COMPILER_PB_FORBIDDEN_REFERENCE, "error"); //$NON-NLS-1$
     }
   }
 
-  private boolean enforceClasspathAccessRules(IMavenProjectFacade facade, IProgressMonitor monitor)
+  private boolean getEnforce(IMavenProjectFacade facade, String policy, IProgressMonitor monitor)
       throws CoreException {
     MavenProject mavenProject = facade.getMavenProject(monitor);
     for (MojoExecution execution : facade.getMojoExecutions(COMPILER_PLUGIN_GROUP_ID,
         COMPILER_PLUGIN_ARTIFACT_ID, monitor, GOAL_COMPILE)) {
-      String accessRulesViolation =
-          getParameterValue(mavenProject, "accessRulesViolation", String.class, execution, monitor);
-      if ("error".equals(accessRulesViolation)) {
+      String value = getParameterValue(mavenProject, policy, String.class, execution, monitor);
+      if ("error".equals(value)) {
         return true;
       }
     }
@@ -127,13 +128,19 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
   @Override
   public void configureClasspath(IMavenProjectFacade facade, IClasspathDescriptor classpath,
       IProgressMonitor monitor) throws CoreException {
-    if (enforceClasspathAccessRules(facade, monitor)) {
-      configureClasspathAccessRules(facade, classpath, monitor);
+    boolean transitiveDependencyReference =
+        getEnforce(facade, "transitiveDependencyReference", monitor);
+    boolean privatePackageReference = getEnforce(facade, "privatePackageReference", monitor);
+    if (transitiveDependencyReference || privatePackageReference) {
+      configureClasspathAccessRules(facade, classpath, transitiveDependencyReference,
+          privatePackageReference, monitor);
     }
   }
 
   private void configureClasspathAccessRules(IMavenProjectFacade facade,
-      IClasspathDescriptor classpath, IProgressMonitor monitor) throws CoreException {
+      IClasspathDescriptor classpath, boolean transitiveDependencyReference,
+      boolean privatePackageReference, IProgressMonitor monitor) throws CoreException {
+
     MavenProject mavenProject = facade.getMavenProject(monitor);
 
     Map<ArtifactKey, Artifact> dependencies = new HashMap<>();
@@ -151,8 +158,10 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
       if (!dependencies.containsKey(artifactKey)) {
         continue; // ignore custom classpath entries
       }
-      if (directDependencies.contains(artifactKey)) {
-        // direct dependency, honour exported-package configuration
+      if (transitiveDependencyReference && !directDependencies.contains(artifactKey)) {
+        entry.addAccessRule(JavaCore.newAccessRule(new Path("**"), IAccessRule.K_NON_ACCESSIBLE
+            | IAccessRule.IGNORE_IF_BETTER));
+      } else if (privatePackageReference) {
         Collection<String> exportedPackages = getExportedPackages(dependencies.get(artifactKey));
         if (exportedPackages != null) {
           for (String exportedPackage : exportedPackages) {
@@ -162,10 +171,6 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
           entry.addAccessRule(JavaCore.newAccessRule(new Path("**"), IAccessRule.K_NON_ACCESSIBLE
               | IAccessRule.IGNORE_IF_BETTER));
         }
-      } else {
-        // indirect dependency, forbid everything
-        entry.addAccessRule(JavaCore.newAccessRule(new Path("**"), IAccessRule.K_NON_ACCESSIBLE
-            | IAccessRule.IGNORE_IF_BETTER));
       }
     }
   }
