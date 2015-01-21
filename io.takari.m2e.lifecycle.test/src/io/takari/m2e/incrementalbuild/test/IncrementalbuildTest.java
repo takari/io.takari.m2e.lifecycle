@@ -7,22 +7,15 @@
  */
 package io.takari.m2e.incrementalbuild.test;
 
+import io.takari.m2e.test.WorkspaceChangeRecorder;
+
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.internal.IMavenConstants;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
@@ -32,63 +25,7 @@ import org.eclipse.m2e.tests.common.WorkspaceHelpers;
 @SuppressWarnings("restriction")
 public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
 
-  private static class WorkspaceChangeRecorder
-      implements
-        IResourceChangeListener,
-        IResourceDeltaVisitor {
-
-    private String pathPrefix = "target/resources";
-
-    private List<String> paths = new ArrayList<>();
-
-    @Override
-    public void resourceChanged(IResourceChangeEvent event) {
-      try {
-        event.getDelta().accept(this);
-      } catch (CoreException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    @Override
-    public boolean visit(IResourceDelta delta) throws CoreException {
-      if (isRelevant(delta)) {
-        paths.add(delta.getProjectRelativePath().toString());
-      }
-      return true;
-    }
-
-    public void clear() {
-      paths.clear();
-    }
-
-    public List<String> getPaths() {
-      return paths;
-    }
-
-    public void setPathPrefix(String pathPrefix) {
-      this.pathPrefix = pathPrefix;
-    }
-
-    private boolean isRelevant(IResourceDelta delta) {
-      if (!(delta.getResource() instanceof IFile)) {
-        return false;
-      }
-      if (!delta.getProjectRelativePath().toString().startsWith(pathPrefix)) {
-        return false;
-      }
-      if ((delta.getKind() & (IResourceDelta.ADDED | IResourceDelta.REMOVED)) != 0) {
-        return true;
-      }
-      if ((delta.getKind() & IResourceDelta.CHANGED) != 0
-          && (delta.getFlags() & IResourceDelta.CONTENT) != 0) {
-        return true;
-      }
-      return false;
-    }
-  }
-
-  private final WorkspaceChangeRecorder recorder = new WorkspaceChangeRecorder();
+  private final WorkspaceChangeRecorder recorder = new WorkspaceChangeRecorder("target/resources");
 
   @Override
   protected void setUp() throws Exception {
@@ -100,18 +37,6 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
   protected void tearDown() throws Exception {
     ResourcesPlugin.getWorkspace().removeResourceChangeListener(recorder);
     super.tearDown();
-  }
-
-  private void assertPaths(List<String> actual, String... expected) {
-    assertEquals(toString(Arrays.asList(expected)), toString(actual));
-  }
-
-  private static String toString(Collection<String> strings) {
-    StringBuilder sb = new StringBuilder();
-    for (String string : strings) {
-      sb.append(string).append('\n');
-    }
-    return sb.toString();
   }
 
   private void assertSynchronized(IProject project, String path) {
@@ -134,7 +59,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(project);
-    assertPaths(recorder.getPaths(), "target/resources/file1.txt");
+    recorder.assertPaths("target/resources/file1.txt");
 
     // no-change incremental build, assert no outputs
     recorder.clear();
@@ -142,7 +67,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(project);
-    assertPaths(recorder.getPaths(), new String[0]);
+    recorder.assertPaths(new String[0]);
 
     // create new file
     recorder.clear();
@@ -151,7 +76,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(project);
-    assertPaths(recorder.getPaths(), "target/resources/file2.txt");
+    recorder.assertPaths("target/resources/file2.txt");
     assertSynchronized(project, "target/resources/file1.txt");
 
     // change existing file
@@ -161,7 +86,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(project);
-    assertPaths(recorder.getPaths(), "target/resources/file2.txt");
+    recorder.assertPaths("target/resources/file2.txt");
     assertSynchronized(project, "target/resources/file1.txt");
 
     // delete existing file
@@ -170,7 +95,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(project);
-    assertPaths(recorder.getPaths(), "target/resources/file2.txt");
+    recorder.assertPaths("target/resources/file2.txt");
     assertSynchronized(project, "target/resources/file1.txt");
 
     // create a file that does not match expected input pattern
@@ -180,7 +105,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(project);
-    assertPaths(recorder.getPaths(), new String[0]);
+    recorder.assertPaths(new String[0]);
   }
 
   public void testBasic_synchronized() throws Exception {
@@ -198,7 +123,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     recorder.setPathPrefix("target/incremental");
     project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
     waitForJobsToComplete();
-    assertPaths(recorder.getPaths(), new String[0]);
+    recorder.assertPaths(new String[0]);
   }
 
   public void testBasic_includes_excludes_changed() throws Exception {
@@ -215,7 +140,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     waitForJobsToComplete();
     project.deleteMarkers(IMavenConstants.MARKER_CONFIGURATION_ID, true, IResource.DEPTH_INFINITE);
     assertNoErrors(project);
-    assertPaths(recorder.getPaths(), "target/resources/file1.txt");
+    recorder.assertPaths("target/resources/file1.txt");
     assertFalse(project.getFile("target/resources/file1.txt").isAccessible());
 
     // reset back to original pom.xml
@@ -232,7 +157,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     waitForJobsToComplete();
     project.deleteMarkers(IMavenConstants.MARKER_CONFIGURATION_ID, true, IResource.DEPTH_INFINITE);
     assertNoErrors(project);
-    assertPaths(recorder.getPaths(), "target/resources/file1.txt");
+    recorder.assertPaths("target/resources/file1.txt");
     assertFalse(project.getFile("target/resources/file1.txt").isAccessible());
   }
 
@@ -266,7 +191,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     waitForJobsToComplete();
     project.deleteMarkers(IMavenConstants.MARKER_CONFIGURATION_ID, true, IResource.DEPTH_INFINITE);
     assertNoErrors(project);
-    assertPaths(recorder.getPaths(), "target/resources/file1.txt");
+    recorder.assertPaths("target/resources/file1.txt");
     assertSynchronized(project, "target/resources/file1.txt");
   }
 
@@ -279,7 +204,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     copyContent(project, "pom.xml-changed", "pom.xml");
     recorder.clear();
     MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration(project, monitor);
-    assertPaths(recorder.getPaths(), new String[0]);
+    recorder.assertPaths(new String[0]);
   }
 
   public void testCrossModule() throws Exception {
@@ -296,7 +221,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(project);
-    assertPaths(recorder.getPaths(), "target/resources/file1.txt");
+    recorder.assertPaths("target/resources/file1.txt");
   }
 
   public void testMessages() throws Exception {
@@ -342,7 +267,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(project);
-    assertPaths(recorder.getPaths(), "target/resources/resource.txt");
+    recorder.assertPaths("target/resources/resource.txt");
   }
 
   public void testUnmodifiedOutputStream() throws Exception {
@@ -350,7 +275,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(project);
-    assertPaths(recorder.getPaths(), "target/resources/file1.txt");
+    recorder.assertPaths("target/resources/file1.txt");
 
     // no-change incremental build, assert no outputs
     recorder.clear();
@@ -359,7 +284,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     waitForJobsToComplete();
     assertNoErrors(project);
     assertTrue(project.getFile("target/resources/file1.txt").isSynchronized(IResource.DEPTH_ZERO));
-    assertPaths(recorder.getPaths(), new String[0]);
+    recorder.assertPaths(new String[0]);
   }
 
   public void testBasedirDoesnotexist() throws Exception {
