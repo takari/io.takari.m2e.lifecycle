@@ -37,7 +37,7 @@ public class DeltaBuildWorkspace extends AbstractBuildWorkspace implements Works
 
   @Override
   public ResourceStatus getResourceStatus(File resource, long lastModified, long length) {
-    IResourceDelta delta = this.delta.findMember(getFile(resource).getFullPath());
+    IResourceDelta delta = this.delta.findMember(getFile(resource).getProjectRelativePath());
 
     if (delta != null) {
       return toStatus(delta.getKind());
