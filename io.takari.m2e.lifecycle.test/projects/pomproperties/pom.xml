@@ -23,6 +23,15 @@
         <artifactId>takari-lifecycle-plugin</artifactId>
         <version>1.10.2</version>
         <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>testProperties</id>
+            <goals>
+              <goal>testProperties</goal>
+            </goals>
+            <phase>generate-test-resources</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
