@@ -59,7 +59,7 @@ public class DeltaBuildWorkspace extends AbstractBuildWorkspace implements Works
               IFile resource = (IFile) delta.getResource();
               File file = resource.getLocation().toFile();
               long lastModified = resource.getLocalTimeStamp();
-              long length = file.lastModified(); // TODO does EFS provide any benefits
+              long length = file.length(); // TODO does EFS provide any benefits
               visitor.visit(file, lastModified, length, toStatus(delta.getKind()));
             }
             return true; // keep visiting
