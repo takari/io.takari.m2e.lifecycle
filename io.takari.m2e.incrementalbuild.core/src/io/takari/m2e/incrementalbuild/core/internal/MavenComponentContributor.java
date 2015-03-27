@@ -35,7 +35,7 @@ public class MavenComponentContributor
 
   @Override
   public void setupRealm(ClassRealm classRealm, ClassRealmRequest request) {
-    if (request.getType() == RealmType.Plugin) {
+    if (request.getType() == RealmType.Plugin || request.getType() == RealmType.Extension) {
       for (Iterator<ClassRealmConstituent> iter = request.getConstituents().iterator(); iter
           .hasNext();) {
         ClassRealmConstituent entry = iter.next();
