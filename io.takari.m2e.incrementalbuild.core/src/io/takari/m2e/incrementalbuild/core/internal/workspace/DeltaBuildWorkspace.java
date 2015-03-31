@@ -44,6 +44,14 @@ public class DeltaBuildWorkspace extends AbstractBuildWorkspace implements Works
       return toStatus(delta.getKind());
     }
 
+    if (processedOutputs.contains(resource)) {
+      return ResourceStatus.MODIFIED;
+    }
+
+    if (deletedOutputs.contains(resource)) {
+      return ResourceStatus.REMOVED;
+    }
+
     return ResourceStatus.UNMODIFIED;
   }
 
