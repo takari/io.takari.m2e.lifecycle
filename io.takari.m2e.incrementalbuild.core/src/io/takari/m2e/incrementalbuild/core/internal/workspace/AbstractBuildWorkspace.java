@@ -7,10 +7,6 @@
  */
 package io.takari.m2e.incrementalbuild.core.internal.workspace;
 
-import io.takari.incrementalbuild.workspace.MessageSink;
-import io.takari.incrementalbuild.workspace.MessageSink.Severity;
-import io.takari.incrementalbuild.workspace.Workspace;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,8 +23,15 @@ import org.eclipse.m2e.core.internal.builder.IIncrementalBuildFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.takari.incrementalbuild.workspace.MessageSink;
+import io.takari.incrementalbuild.workspace.MessageSink.Severity;
+import io.takari.incrementalbuild.workspace.Workspace;
+
 @SuppressWarnings("restriction")
-abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFramework.BuildContext {
+abstract class AbstractBuildWorkspace
+    implements
+      Workspace,
+      IIncrementalBuildFramework.BuildContext {
 
   private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -36,9 +39,9 @@ abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFra
 
   private final IIncrementalBuildFramework.BuildResultCollector results;
 
-  private final Set<File> processedOutputs;
+  protected final Set<File> processedOutputs;
 
-  private final Set<File> deletedOutputs;
+  protected final Set<File> deletedOutputs;
 
   protected AbstractBuildWorkspace(IProject project,
       IIncrementalBuildFramework.BuildResultCollector results) {
@@ -60,7 +63,7 @@ abstract class AbstractBuildWorkspace implements Workspace, IIncrementalBuildFra
     return new FullBuildWorkspace(this);
   }
 
-  private IPath getRelativePath(File file) {
+  protected IPath getRelativePath(File file) {
     IPath basedir = project.getLocation();
     IPath path = Path.fromOSString(file.getAbsolutePath());
     if (basedir.isPrefixOf(path)) {

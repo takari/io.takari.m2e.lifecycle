@@ -7,10 +7,9 @@
  */
 package io.takari.m2e.incrementalbuild.core.internal.workspace;
 
-import io.takari.incrementalbuild.workspace.Workspace;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -18,6 +17,8 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.m2e.core.internal.builder.IIncrementalBuildFramework;
+
+import io.takari.incrementalbuild.workspace.Workspace;
 
 @SuppressWarnings("restriction")
 public class DeltaBuildWorkspace extends AbstractBuildWorkspace implements Workspace {
@@ -58,7 +59,7 @@ public class DeltaBuildWorkspace extends AbstractBuildWorkspace implements Works
             if (delta.getResource() instanceof IFile) {
               IFile resource = (IFile) delta.getResource();
               File file = resource.getLocation().toFile();
-              long lastModified = resource.getLocalTimeStamp();
+              long lastModified = file.lastModified();
               long length = file.length(); // TODO does EFS provide any benefits
               visitor.visit(file, lastModified, length, toStatus(delta.getKind()));
             }
@@ -68,6 +69,23 @@ public class DeltaBuildWorkspace extends AbstractBuildWorkspace implements Works
       } catch (CoreException e) {
         // TODO likely not good enough
         throw new IOException(e);
+      }
+    }
+
+    // walk files changed/deleted through this build context.
+    // this is necessary because eclipse workspace does not report builder's own changes
+    doWalk(basedir, processedOutputs, visitor, ResourceStatus.MODIFIED);
+    doWalk(basedir, deletedOutputs, visitor, ResourceStatus.REMOVED);
+  }
+
+  private void doWalk(File basedir, Collection<File> files, FileVisitor visitor,
+      ResourceStatus status) {
+    for (File file : files) {
+      if (!file.toPath().startsWith(basedir.toPath())) {
+        continue;
+      }
+      if (delta == null || this.delta.findMember(getRelativePath(file)) == null) {
+        visitor.visit(file, file.lastModified(), file.length(), status);
       }
     }
   }

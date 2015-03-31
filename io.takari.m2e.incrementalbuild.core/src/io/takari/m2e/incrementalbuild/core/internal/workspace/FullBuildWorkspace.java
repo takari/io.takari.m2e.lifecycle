@@ -7,8 +7,6 @@
  */
 package io.takari.m2e.incrementalbuild.core.internal.workspace;
 
-import io.takari.incrementalbuild.workspace.Workspace;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -21,6 +19,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.m2e.core.internal.builder.IIncrementalBuildFramework;
+
+import io.takari.incrementalbuild.workspace.Workspace;
 
 @SuppressWarnings("restriction")
 public class FullBuildWorkspace extends AbstractBuildWorkspace implements Workspace {
@@ -68,7 +68,7 @@ public class FullBuildWorkspace extends AbstractBuildWorkspace implements Worksp
         public boolean visit(IResource resource) throws CoreException {
           if (resource instanceof IFile) {
             File file = resource.getLocation().toFile();
-            long lastModified = resource.getLocalTimeStamp();
+            long lastModified = file.lastModified();
             long length = file.length();
             visitor.visit(file, lastModified, length, ResourceStatus.NEW);
           }
