@@ -32,8 +32,8 @@ public class NoChangeBuildWorkspace extends AbstractBuildWorkspace {
   }
 
   @Override
-  protected void doWalk(File basedir, FileVisitor visitor) throws IOException {
-    // nothing to report in delta mode
+  public void walk(File basedir, FileVisitor visitor) throws IOException {
+    // nothing to report in no-change mode
   }
 
 }

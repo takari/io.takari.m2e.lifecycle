@@ -56,7 +56,7 @@ public class DeltaBuildWorkspace extends AbstractBuildWorkspace implements Works
   }
 
   @Override
-  protected void doWalk(final File basedir, final FileVisitor visitor) throws IOException {
+  public void walk(final File basedir, final FileVisitor visitor) throws IOException {
     IResourceDelta delta = this.delta.findMember(getFolder(basedir).getProjectRelativePath());
     if (delta != null) {
       try {

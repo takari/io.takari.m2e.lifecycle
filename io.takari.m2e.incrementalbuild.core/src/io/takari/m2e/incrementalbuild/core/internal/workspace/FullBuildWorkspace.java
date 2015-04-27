@@ -60,7 +60,10 @@ public class FullBuildWorkspace extends AbstractBuildWorkspace implements Worksp
   }
 
   @Override
-  protected void doWalk(File basedir, final FileVisitor visitor) throws IOException {
+  public void walk(File basedir, final FileVisitor visitor) throws IOException {
+    if (!basedir.isDirectory()) {
+      return;
+    }
     final IContainer folder = getFolder(basedir);
     try {
       folder.accept(new IResourceVisitor() {

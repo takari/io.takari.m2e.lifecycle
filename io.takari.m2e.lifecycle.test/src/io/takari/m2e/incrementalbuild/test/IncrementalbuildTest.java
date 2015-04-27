@@ -81,8 +81,8 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
 
     // change existing file
     recorder.clear();
-    project.getFile("src/resources/file2.txt").setContents(
-        new ByteArrayInputStream(new byte[] {1}), 0, monitor);
+    project.getFile("src/resources/file2.txt").setContents(new ByteArrayInputStream(new byte[] {1}),
+        0, monitor);
     project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(project);
@@ -179,6 +179,23 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertFalse(project.getFile("target/resources/file1.txt").isAccessible());
   }
 
+  public void testBasic_incremental_deleteSourceDirectory() throws Exception {
+    IProject project = importProject("projects/basic/pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertTrue(project.getFile("target/resources/file1.txt").isAccessible());
+
+    project.getFile("src/resources/file1.txt").delete(true, monitor);
+    project.getFile("src/resources/file1.xtx").delete(true, monitor);
+    project.getFolder("src/resources").delete(true, monitor);
+
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertFalse(project.getFile("target/resources/file1.txt").isAccessible());
+  }
+
   public void testDeltaBuildConfigurationChange() throws Exception {
     IProject project = importProject("projects/config-change/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -208,9 +225,8 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
   }
 
   public void testCrossModule() throws Exception {
-    IProject[] projects =
-        importProjects("projects/cross-module", new String[] {"modulea/pom.xml"},
-            new ResolverConfiguration());
+    IProject[] projects = importProjects("projects/cross-module", new String[] {"modulea/pom.xml"},
+        new ResolverConfiguration());
     IProject project = projects[0];
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
     waitForJobsToComplete();
