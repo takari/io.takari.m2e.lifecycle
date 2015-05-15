@@ -13,7 +13,7 @@
 
   <groupId>io.takari.m2e.incrementalbuild.test</groupId>
   <artifactId>test-plugin</artifactId>
-  <version>0.1</version>
+  <version>0.2</version>
   <packaging>maven-plugin</packaging>
 
   <description>
@@ -24,7 +24,7 @@
   <properties>
     <maven-core.version>3.2.1</maven-core.version>
     <maven-plugin-tools.version>3.2</maven-plugin-tools.version>
-    <incrementalbuild.version>0.10.1</incrementalbuild.version>
+    <incrementalbuild.version>0.20.3</incrementalbuild.version>
   </properties>
 
   <dependencies>

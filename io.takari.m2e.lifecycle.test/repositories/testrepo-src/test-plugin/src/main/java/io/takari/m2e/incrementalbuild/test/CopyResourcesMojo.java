@@ -7,9 +7,6 @@
  */
 package io.takari.m2e.incrementalbuild.test;
 
-import io.takari.incrementalbuild.BuildContext;
-import io.takari.incrementalbuild.BuildContext.Input;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -25,6 +22,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import com.google.common.base.Charsets;
+
+import io.takari.incrementalbuild.BuildContext;
+import io.takari.incrementalbuild.Resource;
 
 @Mojo(name = "copy-resources")
 public class CopyResourcesMojo extends AbstractMojo {
@@ -51,7 +51,7 @@ public class CopyResourcesMojo extends AbstractMojo {
     final Path sourceBasepath = directory.toPath().normalize();
     final Path outputBasepath = outputDirectory.toPath().normalize();
     try {
-      for (Input<File> resource : context.registerAndProcessInputs(directory, includes, excludes)) {
+      for (Resource<File> resource : context.registerAndProcessInputs(directory, includes, excludes)) {
         File src = resource.getResource();
         Path relpath = sourceBasepath.relativize(src.toPath().normalize());
         File dst = outputBasepath.resolve(relpath).toFile();

@@ -7,9 +7,6 @@
  */
 package io.takari.m2e.incrementalbuild.test;
 
-import io.takari.incrementalbuild.BuildContext;
-import io.takari.incrementalbuild.BuildContext.Input;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -24,6 +21,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+
+import io.takari.incrementalbuild.BuildContext;
+import io.takari.incrementalbuild.MessageSeverity;
+import io.takari.incrementalbuild.Resource;
 
 @Mojo(name = "message")
 public class MessageMojo extends AbstractMojo {
@@ -43,10 +44,10 @@ public class MessageMojo extends AbstractMojo {
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     try {
-      for (Input<File> input : context.registerAndProcessInputs(directory, includes, excludes)) {
+      for (Resource<File> input : context.registerAndProcessInputs(directory, includes, excludes)) {
         String message = Files.readFirstLine(input.getResource(), Charsets.UTF_8);
         if (message != null && !message.isEmpty()) {
-          input.addMessage(0, 0, message, BuildContext.Severity.ERROR, null);
+          input.addMessage(0, 0, message, MessageSeverity.ERROR, null);
         }
       }
     } catch (IOException e) {
