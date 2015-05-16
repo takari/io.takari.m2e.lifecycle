@@ -196,6 +196,23 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertFalse(project.getFile("target/resources/file1.txt").isAccessible());
   }
 
+  public void testBasic_rename() throws Exception {
+    IProject project = importProject("projects/basic/pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertTrue(project.getFile("target/resources/file1.txt").isAccessible());
+
+    project.getFile("src/resources/file1.txt")
+        .move(project.getFile("src/resources/file2.txt").getFullPath(), false, monitor);
+
+    project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+    assertFalse(project.getFile("target/resources/file1.txt").isAccessible());
+    assertTrue(project.getFile("target/resources/file2.txt").isAccessible());
+  }
+
   public void testDeltaBuildConfigurationChange() throws Exception {
     IProject project = importProject("projects/config-change/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
