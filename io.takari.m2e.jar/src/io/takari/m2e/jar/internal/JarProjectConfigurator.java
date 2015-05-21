@@ -31,7 +31,7 @@ public class JarProjectConfigurator extends AbstractProjectConfigurator {
     PluginDescriptor pluginDescriptor = execution.getMojoDescriptor().getPluginDescriptor();
     MojoDescriptor descriptor = pluginDescriptor.getMojo("pom-properties");
 
-    String _executionId = "m2e-takari-lifecycle:" + execution.getExecutionId() + ":pom-properties";
+    String _executionId = "m2e-takari-lifecycle_" + execution.getExecutionId() + "_pom-properties";
     MojoExecution _execution =
         new MojoExecution(execution.getPlugin(), "pom-properties", _executionId);
     _execution.setConfiguration(execution.getConfiguration());
