@@ -32,5 +32,12 @@
    <extension
          point="org.eclipse.m2e.core.lifecycleMappingMetadataSource">
    </extension>
+   <extension
+         point="org.eclipse.m2e.editor.xml.mojoParameterMetadata">
+      <mojoParameterMetadata
+            class="io.takari.m2e.incrementalbuild.core.internal.editor.TakariMojoParameterMetadata"
+            configurator="takari">
+      </mojoParameterMetadata>
+   </extension>
 
 </plugin>
