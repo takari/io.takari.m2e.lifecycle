@@ -26,6 +26,8 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -33,7 +35,11 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IAccessRule;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.m2e.core.embedder.ArtifactKey;
+import org.eclipse.m2e.core.lifecyclemapping.model.IPluginExecutionMetadata;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
+import org.eclipse.m2e.core.project.MavenProjectUtils;
+import org.eclipse.m2e.core.project.configurator.AbstractBuildParticipant;
+import org.eclipse.m2e.core.project.configurator.MojoExecutionBuildParticipant;
 import org.eclipse.m2e.core.project.configurator.ProjectConfigurationRequest;
 import org.eclipse.m2e.jdt.IClasspathDescriptor;
 import org.eclipse.m2e.jdt.IClasspathEntryDescriptor;
@@ -159,8 +165,8 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
         continue; // ignore custom classpath entries
       }
       if (transitiveDependencyReference && !directDependencies.contains(artifactKey)) {
-        entry.addAccessRule(JavaCore.newAccessRule(new Path("**"), IAccessRule.K_NON_ACCESSIBLE
-            | IAccessRule.IGNORE_IF_BETTER));
+        entry.addAccessRule(JavaCore.newAccessRule(new Path("**"),
+            IAccessRule.K_NON_ACCESSIBLE | IAccessRule.IGNORE_IF_BETTER));
       } else if (privatePackageReference) {
         Collection<String> exportedPackages = getExportedPackages(dependencies.get(artifactKey));
         if (exportedPackages != null) {
@@ -168,8 +174,8 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
             IPath pattern = new Path(exportedPackage).append("/*");
             entry.addAccessRule(JavaCore.newAccessRule(pattern, IAccessRule.K_ACCESSIBLE));
           }
-          entry.addAccessRule(JavaCore.newAccessRule(new Path("**"), IAccessRule.K_NON_ACCESSIBLE
-              | IAccessRule.IGNORE_IF_BETTER));
+          entry.addAccessRule(JavaCore.newAccessRule(new Path("**"),
+              IAccessRule.K_NON_ACCESSIBLE | IAccessRule.IGNORE_IF_BETTER));
         }
       }
     }
@@ -241,8 +247,8 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
     return CharStreams.readLines(new InputStreamReader(is, Charsets.UTF_8), processor);
   }
 
-  protected static Collection<String> parseBundleManifest(InputStream is) throws IOException,
-      BundleException {
+  protected static Collection<String> parseBundleManifest(InputStream is)
+      throws IOException, BundleException {
     Headers<String, String> headers = Headers.parseManifest(is);
     if (!headers.containsKey(Constants.BUNDLE_SYMBOLICNAME)) {
       return null; // not an OSGi bundle
@@ -272,4 +278,76 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
   @Override
   public void configureRawClasspath(ProjectConfigurationRequest request,
       IClasspathDescriptor classpath, IProgressMonitor monitor) throws CoreException {}
+
+  @Override
+  protected void addProjectSourceFolders(IClasspathDescriptor classpath,
+      ProjectConfigurationRequest request, IProgressMonitor monitor) throws CoreException {
+    // add standard entries first
+    super.addProjectSourceFolders(classpath, request, monitor);
+
+    addGeneratedSourceFolders(classpath, request, GOAL_COMPILE, "generatedSourcesDirectory",
+        monitor);
+    addGeneratedSourceFolders(classpath, request, GOAL_TESTCOMPILE, "generatedTestSourcesDirectory",
+        monitor);
+  }
+
+  private void addGeneratedSourceFolders(IClasspathDescriptor classpath,
+      ProjectConfigurationRequest request, String goal, String generatedSourcesDirectory,
+      IProgressMonitor monitor) throws CoreException {
+    IMavenProjectFacade facade = request.getMavenProjectFacade();
+    MavenProject mavenProject = facade.getMavenProject(monitor);
+    for (MojoExecution execution : facade.getMojoExecutions(COMPILER_PLUGIN_GROUP_ID,
+        COMPILER_PLUGIN_ARTIFACT_ID, monitor, goal)) {
+      String proc = getParameterValue(mavenProject, "proc", String.class, execution, monitor);
+      if (proc == null || "none".equals(proc)) {
+        continue;
+      }
+      File sourcesDirectory = getParameterValue(mavenProject, generatedSourcesDirectory, File.class,
+          execution, monitor);
+      IPath sourcePath = getFullPath(facade, sourcesDirectory);
+      IPath outputLocation = facade.getOutputLocation();
+      classpath.addSourceEntry(sourcePath, outputLocation, true /* generated */);
+    }
+  }
+
+  protected IPath getFullPath(IMavenProjectFacade facade, File file) {
+    IProject project = facade.getProject();
+    IPath path = MavenProjectUtils.getProjectRelativePath(project, file.getAbsolutePath());
+    return project.getFullPath().append(path);
+  }
+
+  @Override
+  public AbstractBuildParticipant getBuildParticipant(IMavenProjectFacade projectFacade,
+      MojoExecution execution, IPluginExecutionMetadata executionMetadata) {
+
+    final String goal = execution.getGoal();
+
+    Xpp3Dom configuration = execution.getConfiguration();
+
+    Xpp3Dom proc = configuration.getChild("proc");
+    if (proc == null || "none".equals(proc.getValue())) {
+      return null;
+    }
+
+    configuration = new Xpp3Dom(configuration); // clone original configuration
+    configuration.getChild("proc").setValue("only");
+
+    // only compilerId=jdt provides proper incremental build behaviour
+    Xpp3Dom compilerId = configuration.getChild("compilerId");
+    if (compilerId == null) {
+      compilerId = new Xpp3Dom("compilerId");
+      configuration.addChild(compilerId);
+    }
+    compilerId.setValue("jdt");
+
+    String _executionId =
+        "m2e-takari-lifecycle_" + execution.getExecutionId() + "_" + goal + "-proc-only";
+
+    MojoExecution _execution = new MojoExecution(execution.getPlugin(), goal, _executionId);
+    _execution.setConfiguration(configuration);
+    _execution.setMojoDescriptor(execution.getMojoDescriptor());
+    _execution.setLifecyclePhase(execution.getLifecyclePhase());
+
+    return new MojoExecutionBuildParticipant(_execution, true);
+  }
 }
