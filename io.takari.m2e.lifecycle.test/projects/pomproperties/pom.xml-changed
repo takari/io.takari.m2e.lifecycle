@@ -21,7 +21,7 @@
       <plugin>
         <groupId>io.takari.maven.plugins</groupId>
         <artifactId>takari-lifecycle-plugin</artifactId>
-        <version>1.10.2</version>
+        <version>1.11.8</version>
         <extensions>true</extensions>
         <executions>
           <execution>
