@@ -93,6 +93,16 @@ abstract class AbstractBuildWorkspace
     return getFile(file).exists();
   }
 
+  @Override
+  public boolean isRegularFile(File file) {
+    return isPresent(file);
+  }
+
+  @Override
+  public boolean isDirectory(File file) {
+    return getFolder(file).exists();
+  }
+
 
   @Override
   public void deleteFile(File file) throws IOException {

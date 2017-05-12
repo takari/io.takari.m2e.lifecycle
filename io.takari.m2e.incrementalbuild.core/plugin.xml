@@ -28,6 +28,10 @@
             class="io.takari.m2e.incrementalbuild.core.internal.MojoExecutionProjectConfigurator"
             id="io.takari.m2e.incrementalbuild.mojoExecutionConfigurator">
       </configurator>
+      <configurator
+            class="io.takari.m2e.incrementalbuild.core.internal.BuilderMojoExecutionConfigurator"
+            id="io.takari.m2e.incrementalbuild.builderMojoExecutionConfigurator">
+      </configurator>
    </extension>
    <extension
          point="org.eclipse.m2e.core.lifecycleMappingMetadataSource">

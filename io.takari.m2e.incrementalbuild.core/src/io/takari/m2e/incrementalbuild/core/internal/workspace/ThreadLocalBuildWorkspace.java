@@ -7,12 +7,12 @@
  */
 package io.takari.m2e.incrementalbuild.core.internal.workspace;
 
-import io.takari.incrementalbuild.workspace.MessageSink;
-import io.takari.incrementalbuild.workspace.Workspace;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import io.takari.incrementalbuild.workspace.MessageSink;
+import io.takari.incrementalbuild.workspace.Workspace;
 
 public class ThreadLocalBuildWorkspace implements Workspace, MessageSink {
 
@@ -31,6 +31,16 @@ public class ThreadLocalBuildWorkspace implements Workspace, MessageSink {
   @Override
   public boolean isPresent(File file) {
     return delegate.get().isPresent(file);
+  }
+
+  @Override
+  public boolean isRegularFile(File file) {
+    return delegate.get().isRegularFile(file);
+  }
+
+  @Override
+  public boolean isDirectory(File file) {
+    return delegate.get().isDirectory(file);
   }
 
   @Override

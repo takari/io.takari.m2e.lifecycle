@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>com.salesforce.test</groupId>
+  <artifactId>simple-test-project</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>takari-jar</packaging>
+  <name>Simple Test Project</name>
+  
+  <properties>
+    <java.numeric.version>1.8</java.numeric.version>
+  </properties>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.takari.builder</groupId>
+        <artifactId>takari-builder</artifactId>
+        <version>0.20.5-SNAPSHOT</version>
+        <extensions>true</extensions>
+      </plugin>
+      <plugin>
+        <groupId>com.testing</groupId>
+        <artifactId>builders</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>build-message</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <inputFile>${project.basedir}/src/main/resources/message2.txt</inputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>io.takari.maven.plugins</groupId>
+        <artifactId>takari-lifecycle-plugin</artifactId>
+        <version>1.12.4</version>
+        <extensions>true</extensions>
+        <configuration>
+          <proc>none</proc>
+          <source>${java.numeric.version}</source>
+          <sourceJar>true</sourceJar>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
