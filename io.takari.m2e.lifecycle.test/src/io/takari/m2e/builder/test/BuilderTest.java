@@ -288,6 +288,13 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
     MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration(project, monitor);
     recorder.assertPaths(new String[0]);
   }
+  
+  public void testMultithreadedBuilder() throws Exception {
+    IProject project = importProject("projects/multithreaded-builder/pom.xml");
+    project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    assertNoErrors(project);
+  }
 
   private void buildAndWaitForJobsToComplete(IProject project, int incrementalBuilderType)
       throws CoreException, InterruptedException {
