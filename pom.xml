@@ -24,7 +24,6 @@
  
   <properties>
     <repositoryPathId>m2eclipse-takari-lifecycle</repositoryPathId>
-    
     <incrementalbuild-workspace.version>0.20.5-SNAPSHOT</incrementalbuild-workspace.version>
     <takari-builder.version>0.20.5-SNAPSHOT</takari-builder.version>
   </properties>
