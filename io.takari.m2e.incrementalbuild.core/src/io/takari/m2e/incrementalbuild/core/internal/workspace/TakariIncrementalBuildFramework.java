@@ -27,7 +27,7 @@ public class TakariIncrementalBuildFramework implements IIncrementalBuildFramewo
       BuildResultCollector results) {
     final AbstractBuildWorkspace workspace = newWorkspace(project, kind, delta, results);
     ThreadLocalBuildWorkspace.setDelegate(workspace);
-    PolicyContextPreserver.registerDelegate(new WorkspaceContextAccessor());
+    PolicyContextPreserver.registerAccessor(new WorkspaceContextAccessor());
     return workspace;
   }
 
