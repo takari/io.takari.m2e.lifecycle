@@ -5,6 +5,7 @@
         <goals>
           <goal>build-enum</goal>
           <goal>build-message</goal>
+          <goal>concat-text-files</goal>
         </goals>
       </pluginExecutionFilter>
       <action>

@@ -29,7 +29,7 @@ import io.takari.m2e.test.WorkspaceChangeRecorder;
 @SuppressWarnings("restriction")
 public class BuilderTest extends AbstractMavenProjectTestCase {
 
-  private final WorkspaceChangeRecorder recorder = new WorkspaceChangeRecorder("target/generated-sources/enum");
+  private final WorkspaceChangeRecorder recorder = new WorkspaceChangeRecorder("target/generated-sources");
 
   @Override
   protected void setUp() throws Exception {
@@ -287,6 +287,35 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
     recorder.clear();
     MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration(project, monitor);
     recorder.assertPaths(new String[0]);
+  }
+
+  public void testCrossModuleDependencies() throws Exception {
+    IProject dependency = importProject("projects/cross-module-dependencies-builder/dependency/pom.xml");
+    buildAndWaitForJobsToComplete(dependency, IncrementalProjectBuilder.FULL_BUILD);
+    assertNoErrors(dependency);
+    
+    IProject project = importProject("projects/cross-module-dependencies-builder/project/pom.xml");
+    buildAndWaitForJobsToComplete(project, IncrementalProjectBuilder.FULL_BUILD);
+    assertNoErrors(project);
+    recorder.assertPaths("target/generated-sources/output.txt");
+
+    // edit a file in a dependency project
+    copyContent(dependency, "resources/1.txt-changed", "resources/1.txt");
+    recorder.clear();
+    buildAndWaitForJobsToComplete(dependency, IncrementalProjectBuilder.INCREMENTAL_BUILD);
+    assertNoErrors(dependency);
+    buildAndWaitForJobsToComplete(project, IncrementalProjectBuilder.INCREMENTAL_BUILD);
+    assertNoErrors(project);
+    recorder.assertPaths("target/generated-sources/output.txt");
+    
+    // revert the change
+    copyContent(dependency, "resources/1.txt-orig", "resources/1.txt");
+    recorder.clear();
+    buildAndWaitForJobsToComplete(dependency, IncrementalProjectBuilder.INCREMENTAL_BUILD);
+    assertNoErrors(dependency);
+    buildAndWaitForJobsToComplete(project, IncrementalProjectBuilder.INCREMENTAL_BUILD);
+    assertNoErrors(project);
+    recorder.assertPaths("target/generated-sources/output.txt");
   }
 
   private void buildAndWaitForJobsToComplete(IProject project, int incrementalBuilderType)
