@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.testing</groupId>
+  <artifactId>builders</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>takari-maven-plugin</packaging>
+  
+  <properties>
+    <io.takari.builder.version>0.20.5-SNAPSHOT</io.takari.builder.version>
+    <java.numeric.version>1.8</java.numeric.version>
+  </properties>
+  
+  <dependencies>
+    <dependency>
+      <groupId>io.takari.builder</groupId>
+      <artifactId>takari-builder</artifactId>
+      <version>${io.takari.builder.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.takari.builder</groupId>
+      <artifactId>takari-builder-apt</artifactId>
+      <version>${io.takari.builder.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup</groupId>
+      <artifactId>javapoet</artifactId>
+      <version>1.7.0</version>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.takari.maven.plugins</groupId>
+        <artifactId>takari-lifecycle-plugin</artifactId>
+        <version>1.12.4</version>
+        <extensions>true</extensions>
+        <configuration>
+          <proc>procEX</proc>
+          <source>${java.numeric.version}</source>
+           <!-- jar -->
+          <sourceJar>true</sourceJar>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
