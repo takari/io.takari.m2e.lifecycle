@@ -14,7 +14,6 @@ import org.eclipse.m2e.core.lifecyclemapping.model.IPluginExecutionMetadata;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.configurator.AbstractBuildParticipant;
 import org.eclipse.m2e.core.project.configurator.AbstractProjectConfigurator;
-import org.eclipse.m2e.core.project.configurator.MojoExecutionBuildParticipant;
 import org.eclipse.m2e.core.project.configurator.ProjectConfigurationRequest;
 
 /**
@@ -32,6 +31,6 @@ public class BuilderMojoExecutionConfigurator extends AbstractProjectConfigurato
   @Override
   public AbstractBuildParticipant getBuildParticipant(IMavenProjectFacade projectFacade,
       MojoExecution execution, IPluginExecutionMetadata executionMetadata) {
-    return new MojoExecutionBuildParticipant(execution, true, true);
+    return new BuilderExecutionBuildParticipant(execution, true, true);
   }
 }
