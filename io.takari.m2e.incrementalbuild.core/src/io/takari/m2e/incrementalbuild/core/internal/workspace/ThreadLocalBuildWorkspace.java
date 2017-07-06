@@ -72,6 +72,10 @@ public class ThreadLocalBuildWorkspace implements Workspace, MessageSink {
     ThreadLocalBuildWorkspace.delegate.set(delegate);
   }
 
+  public static AbstractBuildWorkspace getDelegate() {
+    return ThreadLocalBuildWorkspace.delegate.get();
+  }
+
   @Override
   public void message(Object resource, int line, int column, String message, Severity severity,
       Throwable cause) {
