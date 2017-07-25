@@ -304,24 +304,23 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
     IProject project = importProject("projects/cross-module-dependencies-builder/project/pom.xml");
     buildAndWaitForJobsToComplete(project, IncrementalProjectBuilder.FULL_BUILD);
     assertNoErrors(project);
-    recorder.assertPaths("target/generated-sources/output.txt");
+    recorder.assertPaths("target/generated-sources/output.txt"); 
 
-    // edit a file in a dependency project
-    copyContent(dependency, "resources/1.txt-changed", "resources/1.txt");
+    // overwrite file in dependency target/classes
+    copyContent(dependency, "resources/1.txt-changed", "target/classes/1.txt");
     recorder.clear();
-    buildAndWaitForJobsToComplete(dependency, IncrementalProjectBuilder.INCREMENTAL_BUILD);
     assertNoErrors(dependency);
     buildAndWaitForJobsToComplete(project, IncrementalProjectBuilder.INCREMENTAL_BUILD);
     assertNoErrors(project);
     recorder.assertPaths("target/generated-sources/output.txt");
     
-    // revert the change
-    copyContent(dependency, "resources/1.txt-orig", "resources/1.txt");
+    // revert to original file content in dependency target/classes
+    copyContent(dependency, "resources/1.txt-orig", "target/classes/1.txt");
     recorder.clear();
-    buildAndWaitForJobsToComplete(dependency, IncrementalProjectBuilder.INCREMENTAL_BUILD);
     assertNoErrors(dependency);
     buildAndWaitForJobsToComplete(project, IncrementalProjectBuilder.INCREMENTAL_BUILD);
     assertNoErrors(project);
+    
     recorder.assertPaths("target/generated-sources/output.txt");
   }
 
