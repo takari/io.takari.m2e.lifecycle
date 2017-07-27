@@ -6,7 +6,7 @@
   <packaging>takari-maven-plugin</packaging>
   
   <properties>
-    <io.takari.builder.version>0.20.5-SNAPSHOT</io.takari.builder.version>
+    <io.takari.builder.version>0.20.5</io.takari.builder.version>
     <java.numeric.version>1.8</java.numeric.version>
   </properties>
   

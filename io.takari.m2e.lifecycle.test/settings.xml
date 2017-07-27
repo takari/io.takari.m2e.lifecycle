@@ -33,27 +33,6 @@
       </pluginRepositories>
     </profile>
     <profile>
-      <id>privaterepo</id>
-      <repositories>
-        <repository>
-          <id>privaterepo</id>
-          <url>file:repositories/privaterepo</url>
-          <snapshots><enabled>true</enabled></snapshots>
-          <releases><enabled>true</enabled></releases>
-          <updatePolicy>always</updatePolicy>
-        </repository>
-      </repositories>
-      <pluginRepositories>
-        <pluginRepository>
-          <id>privaterepo</id>
-          <url>file:repositories/privaterepo</url>
-          <snapshots><enabled>true</enabled></snapshots>
-          <releases><enabled>true</enabled></releases>
-          <updatePolicy>always</updatePolicy>
-        </pluginRepository>
-      </pluginRepositories>
-    </profile>
-    <profile>
       <!-- this is needed to be able to resolve staged and just-released artifacts -->
       <id>takari-staging</id>
       <repositories>
@@ -97,7 +76,6 @@
 
   <activeProfiles>
     <activeProfile>testrepo</activeProfile>
-    <activeProfile>privaterepo</activeProfile>
     <activeProfile>takari-staging</activeProfile>
     <activeProfile>takari-snapshots</activeProfile>
   </activeProfiles>

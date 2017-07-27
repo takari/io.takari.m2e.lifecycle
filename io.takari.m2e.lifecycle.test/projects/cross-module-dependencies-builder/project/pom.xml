@@ -24,7 +24,7 @@
       <plugin>
         <groupId>io.takari.builder</groupId>
         <artifactId>takari-builder</artifactId>
-        <version>0.20.5-SNAPSHOT</version>
+        <version>0.20.5</version>
         <extensions>true</extensions>
       </plugin>
       <plugin>
