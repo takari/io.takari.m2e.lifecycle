@@ -285,15 +285,15 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
     // add standard entries first
     super.addProjectSourceFolders(classpath, request, monitor);
 
-    addGeneratedSourceFolders(classpath, request, GOAL_COMPILE, "generatedSourcesDirectory",
+    addGeneratedSourceFolders(classpath, request, GOAL_COMPILE, "generatedSourcesDirectory", false,
         monitor);
     addGeneratedSourceFolders(classpath, request, GOAL_TESTCOMPILE, "generatedTestSourcesDirectory",
-        monitor);
+        true /* testSources */, monitor);
   }
 
   private void addGeneratedSourceFolders(IClasspathDescriptor classpath,
-      ProjectConfigurationRequest request, String goal, String generatedSourcesDirectory,
-      IProgressMonitor monitor) throws CoreException {
+      ProjectConfigurationRequest request, String goal, String generatedSourcesDirectoryParam,
+      boolean testSources, IProgressMonitor monitor) throws CoreException {
     IMavenProjectFacade facade = request.getMavenProjectFacade();
     MavenProject mavenProject = facade.getMavenProject(monitor);
     for (MojoExecution execution : facade.getMojoExecutions(COMPILER_PLUGIN_GROUP_ID,
@@ -302,11 +302,19 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
       if (proc == null || "none".equals(proc)) {
         continue;
       }
-      File sourcesDirectory = getParameterValue(mavenProject, generatedSourcesDirectory, File.class,
-          execution, monitor);
+      File sourcesDirectory = getParameterValue(mavenProject, generatedSourcesDirectoryParam,
+          File.class, execution, monitor);
       IPath sourcePath = getFullPath(facade, sourcesDirectory);
-      IPath outputLocation = facade.getOutputLocation();
-      classpath.addSourceEntry(sourcePath, outputLocation, true /* generated */);
+      File outputDirectory =
+          getParameterValue(mavenProject, "outputDirectory", File.class, execution, monitor);
+      IPath outputPath = getFullPath(facade, outputDirectory);
+      IClasspathEntryDescriptor cpe =
+          classpath.addSourceEntry(sourcePath, outputPath, true /* generated */);
+      if (testSources) {
+        // shame m2e didn't expose this via IClasspathDescriptor or IClasspathEntryDescriptor
+        // name copied from IClasspathAttribute.TEST to avoid dependency on jdt 3.14
+        cpe.setClasspathAttribute("test", "true");
+      }
     }
   }
 
