@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -46,6 +47,24 @@ public class FullBuildWorkspace extends AbstractBuildWorkspace implements Worksp
 
   @Override
   public ResourceStatus getResourceStatus(File resource, long lastModified, long length) {
+
+    //
+    // first check files changed/deleted through this build context
+    // this is necessary because eclipse workspace does not report builder's own changes
+    //
+
+    if (processedOutputs.contains(resource)) {
+      return ResourceStatus.MODIFIED;
+    }
+
+    if (deletedOutputs.contains(resource)) {
+      return ResourceStatus.REMOVED;
+    }
+
+    //
+    // check eclipse workspace next
+    //
+
     IFile file = getFile(resource);
 
     if (!file.exists()) {
@@ -65,22 +84,37 @@ public class FullBuildWorkspace extends AbstractBuildWorkspace implements Worksp
       return;
     }
     final IContainer folder = getFolder(basedir);
-    try {
-      folder.accept(new IResourceVisitor() {
-        @Override
-        public boolean visit(IResource resource) throws CoreException {
-          if (resource instanceof IFile) {
-            File file = resource.getLocation().toFile();
-            long lastModified = file.lastModified();
-            long length = file.length();
-            visitor.visit(file, lastModified, length, ResourceStatus.NEW);
+    if (folder.exists()) {
+      try {
+        folder.accept(new IResourceVisitor() {
+          @Override
+          public boolean visit(IResource resource) throws CoreException {
+            if (resource instanceof IFile) {
+              File file = resource.getLocation().toFile();
+              long lastModified = file.lastModified();
+              long length = file.length();
+              visitor.visit(file, lastModified, length, ResourceStatus.NEW);
+            }
+            return true;
           }
-          return true;
-        }
-      });
-    } catch (CoreException e) {
-      // TODO likely not good enough
-      throw new IOException(e);
+        });
+      } catch (CoreException e) {
+        // TODO likely not good enough
+        throw new IOException(e);
+      }
+    }
+    // walk files changed/deleted through this build context.
+    // this is necessary because eclipse workspace does not report builder's own changes
+    doWalk(basedir, processedOutputs, visitor, ResourceStatus.MODIFIED);
+    doWalk(basedir, deletedOutputs, visitor, ResourceStatus.REMOVED);
+  }
+
+  private void doWalk(File basedir, Collection<File> files, FileVisitor visitor,
+      ResourceStatus status) {
+    for (File file : files) {
+      if (file.toPath().startsWith(basedir.toPath())) {
+        visitor.visit(file, file.lastModified(), file.length(), status);
+      }
     }
   }
 
