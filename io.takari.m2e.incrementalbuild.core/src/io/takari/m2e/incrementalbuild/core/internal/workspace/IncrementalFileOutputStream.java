@@ -34,6 +34,8 @@ class IncrementalFileOutputStream extends OutputStream {
 
   private boolean modified;
 
+  private boolean closed = false;
+
   public IncrementalFileOutputStream(AbstractBuildWorkspace workspace, File file)
       throws IOException {
     this.workspace = workspace;
@@ -59,6 +61,10 @@ class IncrementalFileOutputStream extends OutputStream {
 
   @Override
   public void close() throws IOException {
+    if (closed) {
+      return;
+    }
+    closed = true;
     long pos = raf.getFilePointer();
     if (pos < raf.length()) {
       setModified();
