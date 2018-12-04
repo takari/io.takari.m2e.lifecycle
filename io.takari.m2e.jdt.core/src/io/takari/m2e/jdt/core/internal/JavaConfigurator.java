@@ -23,6 +23,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.project.MavenProject;
@@ -73,6 +75,10 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
   private static final String PATH_EXPORT_PACKAGE = "META-INF/takari/export-package";
 
   private static final String PATH_MANIFESTMF = "META-INF/MANIFEST.MF";
+
+  // version when pessimisticClasspathCaching support was introduced
+  private static final ArtifactVersion PESSIMISTIC_CACHING_VERSION =
+      new DefaultArtifactVersion("1.13.9");
 
   @Override
   protected List<MojoExecution> getCompilerMojoExecutions(ProjectConfigurationRequest request,
@@ -347,6 +353,16 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
       configuration.addChild(compilerId);
     }
     compilerId.setValue("jdt");
+
+    ArtifactVersion pluginVer = new DefaultArtifactVersion(execution.getPlugin().getVersion());
+    if (pluginVer.compareTo(PESSIMISTIC_CACHING_VERSION) >= 0) {
+      Xpp3Dom pessimisticCache = configuration.getChild("pessimisticClasspathCache");
+      if (pessimisticCache == null) {
+        pessimisticCache = new Xpp3Dom("pessimisticClasspathCache");
+        configuration.addChild(pessimisticCache);
+      }
+      pessimisticCache.setValue("true");
+    }
 
     String _executionId =
         "m2e-takari-lifecycle_" + execution.getExecutionId() + "_" + goal + "-proc-only";
