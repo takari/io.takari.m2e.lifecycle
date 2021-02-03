@@ -25,7 +25,7 @@
   <properties>
     <tychoVersion>1.2.0</tychoVersion>
     <eclipse-repo.url>http://download.eclipse.org/releases/photon</eclipse-repo.url>
-    <m2e-core.url>${repoHost}/content/sites/m2e.extras/m2e/1.9.0/N/LATEST</m2e-core.url>
+    <m2e-core.url>https://download.eclipse.org/technology/m2e/releases/1.9/</m2e-core.url>
 
     <repositoryPathId>m2eclipse-takari-lifecycle</repositoryPathId>
     <incrementalbuild-workspace.version>0.20.5</incrementalbuild-workspace.version>
@@ -36,7 +36,7 @@
     <repository>
       <id>takari-stats</id>
       <layout>p2</layout>
-      <url>http://repository.takari.io:8081/nexus/content/sites/m2e.extras/takari-stats-m2e/0.1.0/N/LATEST/</url>
+      <url>https://repo1.maven.org/maven2/.m2e/connectors/takari-stats-m2e/0.1.0/N/LATEST/</url>
     </repository>
   </repositories>
 
