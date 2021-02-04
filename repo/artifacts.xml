@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?artifactRepository version='1.1.0'?>
+<repository name='io.takari.m2e.lifecycle.repository' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1'>
+  <properties size='2'>
+    <property name='p2.timestamp' value='1612450350390'/>
+    <property name='publishPackFilesAsSiblings' value='true'/>
+  </properties>
+  <mappings size='5'>
+    <rule filter='(&amp; (classifier=osgi.bundle) (format=packed))' output='${repoUrl}/plugins/${id}_${version}.jar.pack.gz'/>
+    <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
+    <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
+    <rule filter='(&amp; (classifier=org.eclipse.update.feature) (format=packed))' output='${repoUrl}/features/${id}_${version}.jar.pack.gz'/>
+    <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
+  </mappings>
+  <artifacts size='6'>
+    <artifact classifier='osgi.bundle' id='io.takari.builder.takari-builder-security-manager' version='0.20.5'>
+      <properties size='8'>
+        <property name='artifact.size' value='18973'/>
+        <property name='download.size' value='18973'/>
+        <property name='download.md5' value='d51f281a636b3ce65f342ee1e5a615b1'/>
+        <property name='download.checksum.md5' value='d51f281a636b3ce65f342ee1e5a615b1'/>
+        <property name='download.checksum.sha-256' value='45230d47b353dee3278c1d7c8ea487fad001d385533c3254338b1631934238d5'/>
+        <property name='maven-groupId' value='io.takari.builder'/>
+        <property name='maven-artifactId' value='takari-builder-security-manager'/>
+        <property name='maven-version' value='0.20.5'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='io.takari.incrementalbuild.workspace' version='0.20.5'>
+      <properties size='8'>
+        <property name='artifact.size' value='7122'/>
+        <property name='download.size' value='7122'/>
+        <property name='download.md5' value='eb49feca9f61c5058543bb315863efa5'/>
+        <property name='download.checksum.md5' value='eb49feca9f61c5058543bb315863efa5'/>
+        <property name='download.checksum.sha-256' value='490e48303ef7645d744849b947900a118f31349eef73958ef8b4088ba2ce1b7c'/>
+        <property name='maven-groupId' value='io.takari'/>
+        <property name='maven-artifactId' value='incrementalbuild-workspace'/>
+        <property name='maven-version' value='0.20.5'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='io.takari.m2e.jar' version='0.1.0.202102041452'>
+      <properties size='8'>
+        <property name='artifact.size' value='4825'/>
+        <property name='download.size' value='4825'/>
+        <property name='maven-groupId' value='io.takari.m2e'/>
+        <property name='maven-artifactId' value='io.takari.m2e.jar'/>
+        <property name='maven-version' value='0.1.0-SNAPSHOT'/>
+        <property name='download.md5' value='ef9220641a0ce150995b2a3ef0937cb6'/>
+        <property name='download.checksum.md5' value='ef9220641a0ce150995b2a3ef0937cb6'/>
+        <property name='download.checksum.sha-256' value='75845358c8fd7203fe1309b69682f6e7b597693eacd52925a153f1c3fbb39364'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='io.takari.m2e.lifecycle.feature' version='0.1.0.202102041452'>
+      <properties size='9'>
+        <property name='artifact.size' value='1018'/>
+        <property name='download.size' value='1018'/>
+        <property name='maven-groupId' value='io.takari.m2e'/>
+        <property name='maven-artifactId' value='io.takari.m2e.lifecycle.feature'/>
+        <property name='maven-version' value='0.1.0-SNAPSHOT'/>
+        <property name='download.contentType' value='application/zip'/>
+        <property name='download.md5' value='a1cfaf5a3e540ed3bed860b6f932845c'/>
+        <property name='download.checksum.md5' value='a1cfaf5a3e540ed3bed860b6f932845c'/>
+        <property name='download.checksum.sha-256' value='4b8d44d940f0c74ec2ce0a9f7c5b7959655cda1c265c9f019b2191e038d96bcb'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='io.takari.m2e.jdt.core' version='0.1.0.202102041452'>
+      <properties size='8'>
+        <property name='artifact.size' value='11964'/>
+        <property name='download.size' value='11964'/>
+        <property name='maven-groupId' value='io.takari.m2e'/>
+        <property name='maven-artifactId' value='io.takari.m2e.jdt.core'/>
+        <property name='maven-version' value='0.1.0-SNAPSHOT'/>
+        <property name='download.md5' value='8ea1d426fe72f6ba7fd12bc4e218723d'/>
+        <property name='download.checksum.md5' value='8ea1d426fe72f6ba7fd12bc4e218723d'/>
+        <property name='download.checksum.sha-256' value='bb3cef9fcd0050e96fa1b4690ec36babc417a5a64a74a4e6460da22add97704c'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='io.takari.m2e.incrementalbuild.core' version='0.1.0.202102041452'>
+      <properties size='8'>
+        <property name='artifact.size' value='31934'/>
+        <property name='download.size' value='31934'/>
+        <property name='maven-groupId' value='io.takari.m2e'/>
+        <property name='maven-artifactId' value='io.takari.m2e.incrementalbuild.core'/>
+        <property name='maven-version' value='0.1.0-SNAPSHOT'/>
+        <property name='download.md5' value='c0452570cd90d1c058d9ea58b3d22ade'/>
+        <property name='download.checksum.md5' value='c0452570cd90d1c058d9ea58b3d22ade'/>
+        <property name='download.checksum.sha-256' value='c55898c1b30e71087c8bfda35fee4f22bb8d2a3aeb9949ee1a440529f1203afc'/>
+      </properties>
+    </artifact>
+  </artifacts>
+</repository>
