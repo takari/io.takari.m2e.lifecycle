@@ -16,7 +16,6 @@ import org.apache.maven.classrealm.ClassRealmRequest.RealmType;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.eclipse.m2e.core.internal.embedder.IMavenComponentContributor;
 
-import io.takari.builder.enforcer.ComposableSecurityManagerPolicy;
 import io.takari.incrementalbuild.classpath.ClasspathEntriesSupplier;
 import io.takari.incrementalbuild.workspace.MessageSink;
 import io.takari.incrementalbuild.workspace.Workspace;
@@ -50,12 +49,6 @@ public class MavenComponentContributor
           ClassLoader cl = Workspace.class.getClassLoader();
           request.getForeignImports().put("io.takari.incrementalbuild.workspace", cl);
           request.getForeignImports().put("io.takari.incrementalbuild.classpath", cl);
-        }
-        if ("io.takari.builder".equals(entry.getGroupId())
-            && "takari-builder-security-manager".equals(entry.getArtifactId())) {
-          iter.remove();
-          ClassLoader cl = ComposableSecurityManagerPolicy.class.getClassLoader();
-          request.getForeignImports().put("io.takari.builder.enforcer", cl);
         }
       }
     }

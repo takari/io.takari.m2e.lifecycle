@@ -17,8 +17,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.m2e.core.internal.builder.IIncrementalBuildFramework;
 
-import io.takari.builder.enforcer.PolicyContextPreserver;
-
 @SuppressWarnings("restriction")
 public class TakariIncrementalBuildFramework implements IIncrementalBuildFramework {
 
@@ -27,7 +25,6 @@ public class TakariIncrementalBuildFramework implements IIncrementalBuildFramewo
       BuildResultCollector results) {
     final AbstractBuildWorkspace workspace = newWorkspace(project, kind, delta, results);
     ThreadLocalBuildWorkspace.setDelegate(workspace);
-    PolicyContextPreserver.registerAccessor(new WorkspaceContextAccessor());
     return workspace;
   }
 
