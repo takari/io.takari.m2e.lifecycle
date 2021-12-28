@@ -32,14 +32,6 @@
     <takari-builder.version>0.20.5</takari-builder.version>
   </properties>
 
-  <repositories>
-    <repository>
-      <id>takari-stats</id>
-      <layout>p2</layout>
-      <url>https://repo1.maven.org/maven2/.m2e/connectors/takari-stats-m2e/0.1.0/N/LATEST/</url>
-    </repository>
-  </repositories>
-
   <modules>
     <module>io.takari.m2e.incrementalbuild.core</module>
     <module>io.takari.m2e.jdt.core</module>
