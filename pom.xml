@@ -55,10 +55,5 @@
       <artifactId>incrementalbuild-workspace</artifactId>
       <version>${incrementalbuild-workspace.version}</version>
     </dependency>
-    <dependency>
-      <groupId>io.takari.builder</groupId>
-      <artifactId>takari-builder-security-manager</artifactId>
-      <version>${takari-builder.version}</version>
-    </dependency>
   </dependencies>
 </project>

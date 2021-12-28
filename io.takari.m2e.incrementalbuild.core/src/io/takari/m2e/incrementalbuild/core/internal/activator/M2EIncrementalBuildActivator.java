@@ -7,8 +7,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import io.takari.builder.enforcer.ComposableSecurityManagerPolicy;
-
 
 public class M2EIncrementalBuildActivator implements BundleActivator {
 
@@ -27,7 +25,6 @@ public class M2EIncrementalBuildActivator implements BundleActivator {
   @Override
   public void start(BundleContext context) throws Exception {
     this.context = context;
-    ComposableSecurityManagerPolicy.setSystemSecurityManager();
   }
 
   @Override
