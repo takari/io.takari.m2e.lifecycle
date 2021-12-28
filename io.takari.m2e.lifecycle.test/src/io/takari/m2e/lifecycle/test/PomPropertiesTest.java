@@ -1,5 +1,9 @@
 package io.takari.m2e.lifecycle.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import io.takari.m2e.test.WorkspaceChangeRecorder;
 
 import java.io.IOException;
@@ -13,23 +17,29 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.m2e.tests.common.AbstractMavenProjectTestCase;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
 
 @SuppressWarnings("restriction")
 public class PomPropertiesTest extends AbstractMavenProjectTestCase {
   private final WorkspaceChangeRecorder recorder = new WorkspaceChangeRecorder("target/classes");
 
+  @Before
   @Override
-  protected void setUp() throws Exception {
+  public void setUp() throws Exception {
     super.setUp();
     ResourcesPlugin.getWorkspace().addResourceChangeListener(recorder);
   }
 
+  @After
   @Override
-  protected void tearDown() throws Exception {
+  public void tearDown() throws Exception {
     ResourcesPlugin.getWorkspace().removeResourceChangeListener(recorder);
     super.tearDown();
   }
 
+  @Test
   public void testPomProperties() throws Exception {
     IProject project = importProject("projects/pomproperties/pom.xml");
     waitForJobsToComplete();

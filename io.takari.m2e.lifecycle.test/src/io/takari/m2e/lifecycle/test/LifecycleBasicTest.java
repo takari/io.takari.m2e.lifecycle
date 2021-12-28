@@ -7,6 +7,10 @@
  */
 package io.takari.m2e.lifecycle.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -17,10 +21,12 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.m2e.tests.common.AbstractMavenProjectTestCase;
+import org.junit.Test;
 
 @SuppressWarnings("restriction")
 public class LifecycleBasicTest extends AbstractMavenProjectTestCase {
 
+  @Test
   public void testTakariJar() throws Exception {
     IProject project = importProject("projects/takari-jar/pom.xml");
     waitForJobsToComplete();

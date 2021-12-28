@@ -7,6 +7,9 @@
  */
 package io.takari.m2e.incrementalbuild.test;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import io.takari.m2e.test.WorkspaceChangeRecorder;
 
 import java.io.ByteArrayInputStream;
@@ -21,20 +24,25 @@ import org.eclipse.m2e.core.internal.IMavenConstants;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
 import org.eclipse.m2e.tests.common.AbstractMavenProjectTestCase;
 import org.eclipse.m2e.tests.common.WorkspaceHelpers;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
 
 @SuppressWarnings("restriction")
 public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
 
   private final WorkspaceChangeRecorder recorder = new WorkspaceChangeRecorder("target/resources");
 
+  @Before
   @Override
-  protected void setUp() throws Exception {
+  public void setUp() throws Exception {
     super.setUp();
     ResourcesPlugin.getWorkspace().addResourceChangeListener(recorder);
   }
 
+  @After
   @Override
-  protected void tearDown() throws Exception {
+  public void tearDown() throws Exception {
     ResourcesPlugin.getWorkspace().removeResourceChangeListener(recorder);
     super.tearDown();
   }
@@ -48,6 +56,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
   // the tests
   //
 
+  @Test
   public void testBasic() throws Exception {
     IProject project = importProject("projects/basic/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -108,6 +117,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     recorder.assertPaths(new String[0]);
   }
 
+  @Test
   public void testBasic_synchronized() throws Exception {
     IProject project = importProject("projects/basic/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -126,6 +136,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     recorder.assertPaths(new String[0]);
   }
 
+  @Test
   public void testBasic_includes_excludes_changed() throws Exception {
     IProject project = importProject("projects/basic/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -161,6 +172,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertFalse(project.getFile("target/resources/file1.txt").isAccessible());
   }
 
+  @Test
   public void testBasic_cleanGeneratedResources() throws Exception {
     IProject project = importProject("projects/basic/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -179,6 +191,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertFalse(project.getFile("target/resources/file1.txt").isAccessible());
   }
 
+  @Test
   public void testBasic_incremental_deleteSourceDirectory() throws Exception {
     IProject project = importProject("projects/basic/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -196,6 +209,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertFalse(project.getFile("target/resources/file1.txt").isAccessible());
   }
 
+  @Test
   public void testBasic_rename() throws Exception {
     IProject project = importProject("projects/basic/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -213,6 +227,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertTrue(project.getFile("target/resources/file2.txt").isAccessible());
   }
 
+  @Test
   public void testDeltaBuildConfigurationChange() throws Exception {
     IProject project = importProject("projects/config-change/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -229,6 +244,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertSynchronized(project, "target/resources/file1.txt");
   }
 
+  @Test
   public void testConfigurationUpdate() throws Exception {
     IProject project = importProject("projects/config-change/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -241,6 +257,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     recorder.assertPaths(new String[0]);
   }
 
+  @Test
   public void testCrossModule() throws Exception {
     IProject[] projects = importProjects("projects/cross-module", new String[] {"modulea/pom.xml"},
         new ResolverConfiguration());
@@ -257,6 +274,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     recorder.assertPaths("target/resources/file1.txt");
   }
 
+  @Test
   public void testMessages() throws Exception {
     IProject project = importProject("projects/messages/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -294,6 +312,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
         "src/resources/resource.txt", project);
   }
 
+  @Test
   public void testInputsBasedir() throws Exception {
     IProject project = importProject("projects/inputs-basedir/pom.xml");
 
@@ -303,6 +322,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     recorder.assertPaths("target/resources/resource.txt");
   }
 
+  @Test
   public void testUnmodifiedOutputStream() throws Exception {
     IProject project = importProject("projects/unmodified-output-stream/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -320,6 +340,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     recorder.assertPaths(new String[0]);
   }
 
+  @Test
   public void testBasedirDoesnotexist() throws Exception {
     IProject project = importProject("projects/basedir-doesnotexist/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -327,6 +348,7 @@ public class IncrementalbuildTest extends AbstractMavenProjectTestCase {
     assertNoErrors(project);
   }
 
+  @Test
   public void testChainedMojos() throws Exception {
     // assert mojos can read resources generated by other mojos during the same build
     IProject project = importProject("projects/chained-mojos/pom.xml");

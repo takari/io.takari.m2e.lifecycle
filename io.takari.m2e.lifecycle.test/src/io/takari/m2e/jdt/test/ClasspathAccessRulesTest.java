@@ -1,5 +1,7 @@
 package io.takari.m2e.jdt.test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.util.List;
 
@@ -15,12 +17,15 @@ import org.eclipse.m2e.tests.common.AbstractMavenProjectTestCase;
 import org.eclipse.m2e.tests.common.ClasspathHelpers;
 import org.eclipse.m2e.tests.common.WorkspaceHelpers;
 
+import org.junit.Test;
+
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
 @SuppressWarnings("restriction")
 public class ClasspathAccessRulesTest extends AbstractMavenProjectTestCase {
 
+  @Test
   public void testBasic() throws Exception {
     IProject project = importProject("projects/classpath-access-rules/basic/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);

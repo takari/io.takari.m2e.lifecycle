@@ -5,10 +5,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.m2e.tests.common.AbstractMavenProjectTestCase;
 import org.eclipse.m2e.tests.common.ClasspathHelpers;
+import org.junit.Test;
 
 @SuppressWarnings("restriction")
 public class AnnotationProcessingTest extends AbstractMavenProjectTestCase {
 
+  @Test
   public void testAnnotationProcessing() throws Exception {
     IProject project = importProject("projects/compile-proc/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -25,12 +27,13 @@ public class AnnotationProcessingTest extends AbstractMavenProjectTestCase {
     );
   }
 
+  @Test
   public void testAnnotationProcessingCache() throws Exception {
     IProject parent = importProject("projects/compile-proc-cache/pom.xml");
     parent.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
     waitForJobsToComplete();
     assertNoErrors(parent);
-    
+
     IProject project1 = importProject("projects/compile-proc-cache/one/pom.xml");
     project1.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
     waitForJobsToComplete();

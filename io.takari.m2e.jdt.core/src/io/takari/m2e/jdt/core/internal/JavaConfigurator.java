@@ -51,6 +51,8 @@ import org.eclipse.osgi.framework.util.Headers;
 import org.eclipse.osgi.util.ManifestElement;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
@@ -61,6 +63,8 @@ import com.google.common.io.LineProcessor;
 public class JavaConfigurator extends AbstractJavaProjectConfigurator
     implements
       IJavaProjectConfigurator {
+
+  private static final Logger log = LoggerFactory.getLogger(JavaConfigurator.class);
 
   private static final String COMPILER_PLUGIN_GROUP_ID = "io.takari.maven.plugins";
 
@@ -88,12 +92,14 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
   }
 
   @Override
-  protected boolean isTestCompileExecution(MojoExecution execution) {
+  protected boolean isTestCompileExecution(MojoExecution execution, MavenProject mavenProject,
+      Map<String, String> options, IProgressMonitor monitor) {
     return GOAL_TESTCOMPILE.equals(execution.getGoal());
   }
 
   @Override
-  protected boolean isCompileExecution(MojoExecution execution) {
+  protected boolean isCompileExecution(MojoExecution execution, MavenProject mavenProject,
+      Map<String, String> options, IProgressMonitor monitor) {
     return GOAL_COMPILE.equals(execution.getGoal());
   }
 
@@ -139,13 +145,17 @@ public class JavaConfigurator extends AbstractJavaProjectConfigurator
 
   @Override
   public void configureClasspath(IMavenProjectFacade facade, IClasspathDescriptor classpath,
-      IProgressMonitor monitor) throws CoreException {
-    boolean transitiveDependencyReference =
-        getEnforce(facade, "transitiveDependencyReference", monitor);
-    boolean privatePackageReference = getEnforce(facade, "privatePackageReference", monitor);
-    if (transitiveDependencyReference || privatePackageReference) {
-      configureClasspathAccessRules(facade, classpath, transitiveDependencyReference,
-          privatePackageReference, monitor);
+      IProgressMonitor monitor) {
+    try {
+      boolean transitiveDependencyReference =
+          getEnforce(facade, "transitiveDependencyReference", monitor);
+      boolean privatePackageReference = getEnforce(facade, "privatePackageReference", monitor);
+      if (transitiveDependencyReference || privatePackageReference) {
+        configureClasspathAccessRules(facade, classpath, transitiveDependencyReference,
+            privatePackageReference, monitor);
+      }
+    } catch (CoreException ex) {
+      log.error(ex.getMessage(), ex);
     }
   }
 
