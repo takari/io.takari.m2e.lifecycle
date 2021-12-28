@@ -7,6 +7,10 @@
  */
 package io.takari.m2e.builder.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 
 import org.eclipse.core.resources.IFile;
@@ -23,6 +27,9 @@ import org.eclipse.m2e.core.internal.IMavenConstants;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
 import org.eclipse.m2e.tests.common.AbstractMavenProjectTestCase;
 import org.eclipse.m2e.tests.common.WorkspaceHelpers;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
 
 import io.takari.m2e.test.WorkspaceChangeRecorder;
 
@@ -31,14 +38,16 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
 
   private final WorkspaceChangeRecorder recorder = new WorkspaceChangeRecorder("target/generated-sources");
 
+  @Before
   @Override
-  protected void setUp() throws Exception {
+  public void setUp() throws Exception {
     super.setUp();
     ResourcesPlugin.getWorkspace().addResourceChangeListener(recorder);
   }
 
+  @After
   @Override
-  protected void tearDown() throws Exception {
+  public void tearDown() throws Exception {
     ResourcesPlugin.getWorkspace().removeResourceChangeListener(recorder);
     super.tearDown();
   }
@@ -52,6 +61,7 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
   // the tests
   //
 
+  @Test
   public void testBasic() throws Exception {
     IProject project = importProject("projects/basic-builder/pom.xml");
     buildAndWaitForJobsToComplete(project, IncrementalProjectBuilder.FULL_BUILD);
@@ -118,6 +128,7 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
     assertSynchronized(project, "target/generated-sources/enum/com/testing/Enum3.java");
   }
 
+  @Test
   public void testBasic_synchronized() throws Exception {
     IProject project = importProject("projects/basic-builder/pom.xml");
     buildAndWaitForJobsToComplete(project, IncrementalProjectBuilder.FULL_BUILD);
@@ -134,6 +145,7 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
     recorder.assertPaths(new String[0]);
   }
 
+  @Test
   public void testBasic_pom_configuration_changes() throws Exception {
     IProject project = importProject("projects/basic-builder/pom.xml");
     buildAndWaitForJobsToComplete(project, IncrementalProjectBuilder.FULL_BUILD);
@@ -156,6 +168,7 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
     assertTrue(project.getFile("target/generated-sources/enum/com/testing/Enum1.java").isAccessible());
   }
 
+  @Test
   public void testBasic_cleanGeneratedSources() throws Exception {
     IProject project = importProject("projects/basic-builder/pom.xml");
     buildAndWaitForJobsToComplete(project, IncrementalProjectBuilder.FULL_BUILD);
@@ -186,6 +199,7 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
 //    assertFalse(project.getFile("target/generated-sources/enum/com/testing/Enum1.java").isAccessible());
 //  }
 
+  @Test
   public void testBasic_rename() throws Exception {
     IProject project = importProject("projects/basic-builder/pom.xml");
     buildAndWaitForJobsToComplete(project, IncrementalProjectBuilder.FULL_BUILD);
@@ -201,6 +215,7 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
     assertTrue(project.getFile("target/generated-sources/enum/com/testing/Enum2.java").isAccessible());
   }
 
+  @Test
   public void testCrossModule() throws Exception {
     IProject[] projects = importProjects("projects/cross-module-builder", new String[] {"basic-builder/pom.xml"},
         new ResolverConfiguration());
@@ -216,6 +231,7 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
     recorder.assertPaths("target/generated-sources/enum/com/testing/Enum1.java");
   }
 
+  @Test
   public void testMessages() throws Exception {
     IProject project = importProject("projects/messages-builder/pom.xml");
     buildAndWaitForJobsToComplete(project, IncrementalProjectBuilder.FULL_BUILD);
@@ -257,7 +273,8 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
     WorkspaceHelpers.assertErrorMarker(IMavenConstants.MARKER_BUILD_PARTICIPANT_ID, "test", 0,
         "src/main/resources/message.txt", project);
   }
-  
+
+  @Test
   public void testConfigurationOnlyBuildClasspath() throws Exception {
     IProject project = importProject("projects/basic-builder/pom.xml");
     waitForJobsToComplete();
@@ -276,7 +293,8 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
     assertEquals("org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER", cp[5].getPath().toOSString());
     
   }
-  
+
+  @Test
   public void testConfigurationUpdate() throws Exception {
     IProject project = importProject("projects/basic-builder/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -288,7 +306,8 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
     MavenPlugin.getProjectConfigurationManager().updateProjectConfiguration(project, monitor);
     recorder.assertPaths(new String[0]);
   }
-  
+
+  @Test
   public void testMultithreadedBuilder() throws Exception {
     IProject project = importProject("projects/multithreaded-builder/pom.xml");
     project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
@@ -296,6 +315,7 @@ public class BuilderTest extends AbstractMavenProjectTestCase {
     assertNoErrors(project);
   }
 
+  @Test
   public void testCrossModuleDependencies() throws Exception {
     IProject dependency = importProject("projects/cross-module-dependencies-builder/dependency/pom.xml");
     buildAndWaitForJobsToComplete(dependency, IncrementalProjectBuilder.FULL_BUILD);
